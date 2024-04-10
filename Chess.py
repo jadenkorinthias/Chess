@@ -22,18 +22,18 @@ highlight_color = (255, 255, 0)  # Yellow
 
 #Icons from www.flaticon.com
 PIECES = {
-    "b_bishop": pygame.image.load("b_bishop.png"),
-    "b_king": pygame.image.load("b_king.png"),
-    "b_knight": pygame.image.load("b_knight.png"),
-    "b_pawn": pygame.image.load("b_pawn.png"),
-    "b_queen": pygame.image.load("b_queen.png"),
-    "b_rook": pygame.image.load("b_rook.png"),
-    "w_bishop": pygame.image.load("w_bishop.png"),
-    "w_king": pygame.image.load("w_king.png"),
-    "w_knight": pygame.image.load("w_knight.png"),
-    "w_pawn": pygame.image.load("w_pawn.png"),
-    "w_queen": pygame.image.load("w_queen.png"),
-    "w_rook": pygame.image.load("w_rook.png"),
+    "b_bishop": pygame.image.load("icons/b_bishop.png"),
+    "b_king": pygame.image.load("icons/b_king.png"),
+    "b_knight": pygame.image.load("icons/b_knight.png"),
+    "b_pawn": pygame.image.load("icons/b_pawn.png"),
+    "b_queen": pygame.image.load("icons/b_queen.png"),
+    "b_rook": pygame.image.load("icons/b_rook.png"),
+    "w_bishop": pygame.image.load("icons/w_bishop.png"),
+    "w_king": pygame.image.load("icons/w_king.png"),
+    "w_knight": pygame.image.load("icons/w_knight.png"),
+    "w_pawn": pygame.image.load("icons/w_pawn.png"),
+    "w_queen": pygame.image.load("icons/w_queen.png"),
+    "w_rook": pygame.image.load("icons/w_rook.png"),
 }
 
 #init pygame
