@@ -352,6 +352,13 @@ def chess_main():
     game_status = ""
     game_over = False
 
+    #Timer setup for both players
+    initial_timer = 300 #300 seconds = 5 minuites
+    timers = {'white': initial_timer, 'black': initial_timer}
+
+    #Initialize current_timer for the starting turn
+    current_timer = timers[current_turn]
+
     play_again_rect = pygame.Rect(830, 650, 200, 50)
     quit_rect = pygame.Rect(830, 700, 100, 50)
 
@@ -371,11 +378,21 @@ def chess_main():
 
                 if not game_over:
                     mouse_pos = event.pos
+                    #Only update timer for current player's turn
+                    elapsed_time = clock.tick(60) / 1000.0
+                    timers[current_turn] -= elapsed_time
+                    #If the timer runs out
+                    if timers[current_turn] <= 0:
+                        game_status = f"{current_turn.capitalize()} time's up!"
+                        game_over = True
+                        timers[current_turn] = 0 
                     if mouse_pos[0] < 800:
                         col = mouse_pos[0] // SQUARE_SIZE
                         row = mouse_pos[1] // SQUARE_SIZE
                         if selected_piece and (row, col) in valid_moves:
                             board.move_piece(selected_piece, (row, col))
+                            #After moving the piece and changing turns update the timer for the next player
+                            current_timer = timers[current_turn] 
                             # Check if the king is missing after the move
                             if not board.is_king_present('white') or not board.is_king_present('black'):
                                 game_status = "Game Over!"
@@ -412,6 +429,18 @@ def chess_main():
         font = pygame.font.SysFont(None, 36)
         turn_text = font.render(f"{current_turn.capitalize()}'s Turn", True, (255, 255, 255))
         screen.blit(turn_text, (830, 50))
+
+        #Timer update and display
+        time_passed = (clock.tick(60) / 1000.0) * 1.95 #Time passed in seconds
+        if not game_over and current_turn:
+            current_timer -= time_passed
+            if current_timer <= 0:
+                game_status = current_turn.capitalize() + " time's up!"
+                game_over = True
+                current_timer = 0
+        minutes, seconds = divmod(int(current_timer), 60)
+        timer_text = font.render(f"Timer: {minutes:02}:{seconds:02}", True, (255, 255, 255))
+        screen.blit(timer_text, (830, 150))
 
         if game_status:
             status_text = font.render(game_status, True, (255, 0, 0))
