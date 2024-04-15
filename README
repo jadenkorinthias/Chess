@@ -9,7 +9,8 @@ Project proposal slides 4/8: https://docs.google.com/presentation/d/1WaRgAbuTzIS
 Things to do:
 
 *Timer
-*Minimax System
+*En passant
+*Lichess API Bot
 *Castling
 *Player Log
 *Preventing illegal moves
