@@ -9,7 +9,10 @@ Things to do:
 7. DONE: start screen
 8. Player move log, on right side.
 '''
-
+#Code was debugged with GPT-4 and Original work by Andrew, Jaden, and Kyle
+#Contributions: Andrew: Main loop and Functions
+#               Jaden: Start Screen
+#               Kyle: Board, Pieces, and Functions
 import pygame
 
 # Constants for window dimensions
@@ -18,7 +21,7 @@ WINDOW_HEIGHT = 800
 SQUARE_SIZE = 800 // 8  # Assumes a square window for a square chess board
 LGRAY = (211, 211, 211)  # Light gray squares
 DGREEN = (107, 142, 35)  # Dark green squares
-highlight_color = (255, 255, 0)  # Yellow
+YELLOW = (255, 255, 0)  # Yellow
 
 #Icons from www.flaticon.com
 PIECES = {
@@ -203,7 +206,6 @@ class Rook(ChessPiece):
 
         return moves  # Return the list of all valid moves
 
-
 # Define the Knight piece, inheriting from the ChessPiece base class
 class Knight(ChessPiece):
     # Constructor to initialize a Knight object with a color and its initial position
@@ -366,7 +368,7 @@ def highlight_selected_piece(screen, selected_pos):
     # Highlights the selected piece
     if selected_pos:
         y , x = selected_pos
-        pygame.draw.rect(screen, highlight_color, (x * SQUARE_SIZE, (y) * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE), 5)
+        pygame.draw.rect(screen, YELLOW, (x * SQUARE_SIZE, (y) * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE), 5)
 
 def display_valid_moves(screen, moves):
     # Use one surface with transparency for all circles
@@ -403,7 +405,6 @@ def if_castle(king, board): #WIP
                 if clear_path and not board.is_in_check(king.color):
                     return True # Return True if castling is possible
     return False # Return False if castling is not possible
-        
 
 # Pygame setup for the graphical interface
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
