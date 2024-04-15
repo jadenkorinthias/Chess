@@ -418,7 +418,7 @@ def chess_main():
     game_over = False
 
     #Timer setup for both players
-    initial_timer = 300 #300 seconds = 5 minuites
+    initial_timer = 0 #300 seconds = 5 minuites
     timers = {'white': initial_timer, 'black': initial_timer}
 
     #Initialize current_timer for the starting turn
@@ -443,14 +443,6 @@ def chess_main():
 
                 if not game_over:
                     mouse_pos = event.pos
-                    #Only update timer for current player's turn
-                    elapsed_time = clock.tick(60) / 1000.0
-                    timers[current_turn] -= elapsed_time
-                    #If the timer runs out
-                    if timers[current_turn] <= 0:
-                        game_status = f"{current_turn.capitalize()} time's up!"
-                        game_over = True
-                        timers[current_turn] = 0 
                     if mouse_pos[0] < 800:
                         col = mouse_pos[0] // SQUARE_SIZE
                         row = mouse_pos[1] // SQUARE_SIZE
@@ -498,10 +490,13 @@ def chess_main():
         #Timer update and display
         time_passed = (clock.tick(60) / 1000.0) * 1.95 #Time passed in seconds
         if not game_over and current_turn:
-            current_timer -= time_passed
-            if current_timer <= 0:
-                game_status = current_turn.capitalize() + " time's up!"
-                game_over = True
+            current_timer += time_passed
+            #TODO: Add in slider for time
+            if current_timer >= 60:
+                if current_turn == "white":
+                    current_turn = "black"
+                else:
+                    current_turn = "white"
                 current_timer = 0
         minutes, seconds = divmod(int(current_timer), 60)
         timer_text = font.render(f"Timer: {minutes:02}:{seconds:02}", True, (255, 255, 255))
