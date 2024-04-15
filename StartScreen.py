@@ -72,7 +72,7 @@ while running:
             for button_rect, text in button_list:
                 if button_rect.collidepoint(event.pos):
                     if text == 'Chess':
-                        chess_main()  # Call your chess main function
+                        pass
                     elif text == '1 player':
                         show_message("Pfft, you really think we have learned enough to code a Chess AI algorithm???")
                     elif text == '2 players':
