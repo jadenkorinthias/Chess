@@ -169,138 +169,174 @@ class Pawn(ChessPiece):
                     moves.append((x + direction, y + dy))  # Add the capture move to the list of possible moves
         return moves
 
-# Rook piece
+# Define the Rook piece, inheriting from the ChessPiece base class
 class Rook(ChessPiece):
+    # Constructor to initialize a Rook object with a color and its initial position
     def __init__(self, color, position):
-        super().__init__(color, position)
+        super().__init__(color, position)  # Call the constructor of the superclass (ChessPiece) to set color and position
 
+    # Method to calculate all available moves for the Rook piece from its current position
     def available_moves(self, board):
-        moves = []
-        x, y = self.position
-        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # Four possible directions for Rook movement
+        moves = []  # Initialize an empty list to store all valid moves
+        x, y = self.position  # Get the current x, y coordinates of the Rook
 
+        # Define the four possible directions in which a Rook can move: up, right, down, left
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+
+        # Loop over each direction the Rook can move
         for dx, dy in directions:
+            # Attempt to move in this direction up to 7 squares (maximum possible on a chessboard)
             for i in range(1, 8):
-                new_x, new_y = x + dx * i, y + dy * i
+                new_x, new_y = x + dx * i, y + dy * i  # Calculate the new position based on direction and distance i
+
+                # Check if the new position is within the bounds of the chessboard
                 if 0 <= new_x < 8 and 0 <= new_y < 8:
+                    # If the target square is empty, the move is valid
                     if board[new_x, new_y] is None:
-                        moves.append((new_x, new_y))
+                        moves.append((new_x, new_y))  # Add this move to the list of valid moves
+                    # If the target square is occupied by an opponent's piece, the move is valid and captures that piece
                     elif board[new_x, new_y].color != self.color:
-                        moves.append((new_x, new_y))
-                        break
+                        moves.append((new_x, new_y))  # Add the capturing move to the list
+                        break  # Stop checking further in this direction since the Rook cannot jump over pieces
                     else:
-                        break
+                        break  # If the square is occupied by a piece of the same color, stop checking this direction
 
-        return moves
+        return moves  # Return the list of all valid moves
 
-# Knight piece
+
+# Define the Knight piece, inheriting from the ChessPiece base class
 class Knight(ChessPiece):
+    # Constructor to initialize a Knight object with a color and its initial position
     def __init__(self, color, position):
-        super().__init__(color, position)
+        super().__init__(color, position)  # Call the constructor of the superclass (ChessPiece) to set color and position
 
+    # Method to calculate all available moves for the Knight piece from its current position
     def available_moves(self, board):
-        moves = []
-        x, y = self.position
+        moves = []  # Initialize an empty list to store all valid moves
+        x, y = self.position  # Get the current x, y coordinates of the Knight
 
-        # Potential moves considering the 'L' shape movement
+        # Define all possible 'L' shaped moves a Knight can make
         potential_moves = [
-            (x + 2, y + 1), (x + 2, y - 1),
-            (x - 2, y + 1), (x - 2, y - 1),
-            (x + 1, y + 2), (x + 1, y - 2),
-            (x - 1, y + 2), (x - 1, y - 2),
+            (x + 2, y + 1), (x + 2, y - 1),  # Moves that go two squares horizontally and one square vertically
+            (x - 2, y + 1), (x - 2, y - 1),  # Moves that go two squares horizontally and one square vertically in the opposite direction
+            (x + 1, y + 2), (x + 1, y - 2),  # Moves that go one square horizontally and two squares vertically
+            (x - 1, y + 2), (x - 1, y - 2),  # Moves that go one square horizontally and two squares vertically in the opposite direction
         ]
 
+        # Iterate over all potential moves
         for new_x, new_y in potential_moves:
+            # Check if the new position is within the bounds of the chess board
             if 0 <= new_x < 8 and 0 <= new_y < 8:
-                # Use board[new_x, new_y] instead of board[new_x][new_y]
+                # Check if the target square is either empty or occupied by an opponent's piece
                 if board[new_x, new_y] is None or board[new_x, new_y].color != self.color:
-                    moves.append((new_x, new_y))
+                    moves.append((new_x, new_y))  # Add the move to the list of valid moves if the square is valid for movement
 
-        return moves
+        return moves  # Return the list of all valid moves
 
-# Bishop piece
+
+# Define the Bishop class, which inherits from the ChessPiece base class
 class Bishop(ChessPiece):
+    # Constructor to initialize a Bishop object with its color and starting position
     def __init__(self, color, position):
-        super().__init__(color, position)
+        super().__init__(color, position)  # Call the superclass constructor to set the color and position attributes
 
+    # Method to determine all available moves for the Bishop from its current position
     def available_moves(self, board):
-        moves = []
-        x, y = self.position
+        moves = []  # Initialize an empty list to store potential moves
+        x, y = self.position  # Retrieve the current position of the Bishop on the board
 
-        # Directions a Bishop can move: diagonally in 4 ways
+        # Define the four diagonal directions in which a Bishop can move
         directions = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
 
+        # Iterate over each direction to explore potential moves
         for dx, dy in directions:
-            for step in range(1, 8):  # A bishop can move up to 7 squares in one direction
-                new_x = x + dx * step
-                new_y = y + dy * step
+            # Attempt to move in this direction for up to 7 squares (the maximum on a chess board)
+            for step in range(1, 8):
+                new_x = x + dx * step  # Calculate the new x-coordinate based on the direction and step distance
+                new_y = y + dy * step  # Calculate the new y-coordinate similarly
+
+                # Check if the new coordinates are still within the bounds of the board
                 if 0 <= new_x < 8 and 0 <= new_y < 8:
-                    # Use board[new_x, new_y] to access the cell
+                    # Check if the target square is empty
                     if board[new_x, new_y] is None:
-                        moves.append((new_x, new_y))
+                        moves.append((new_x, new_y))  # If so, it's a valid move and is added to the moves list
                     else:
-                        # If there's a piece of different color, it can be captured
+                        # If the target square is not empty and contains a piece of a different color
                         if board[new_x, new_y].color != self.color:
-                            moves.append((new_x, new_y))
-                        break  # Can't jump over pieces
+                            moves.append((new_x, new_y))  # It's a valid capture move, add to the list
+                        break  # Bishop cannot jump over other pieces, so stop checking further along this direction
                 else:
-                    break  # Stop if off the board
+                    break  # If out of bounds, stop checking this direction and move to the next
 
-        return moves
+        return moves  # Return the list of all valid moves determined
 
-# Queen piece
+
+# Define the Queen class, which inherits from the ChessPiece base class
 class Queen(ChessPiece):
+    # Constructor to initialize a Queen object with its color and starting position
     def __init__(self, color, position):
-        super().__init__(color, position)
+        super().__init__(color, position)  # Call the superclass constructor to set the color and position attributes
 
+    # Method to determine all available moves for the Queen from its current position
     def available_moves(self, board):
-        moves = []
-        x, y = self.position
+        moves = []  # Initialize an empty list to store potential moves
+        x, y = self.position  # Retrieve the current position of the Queen on the board
 
-        # Directions a Queen can move: horizontally, vertically, and diagonally (like Rook and Bishop combined)
-        directions = [(0, 1), (1, 0), (0, -1), (-1, 0),  # Horizontally and vertically
-                      (1, 1), (1, -1), (-1, 1), (-1, -1)]  # Diagonally
+        # Define the eight possible directions in which a Queen can move: includes horizontal, vertical, and diagonal directions
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0),  # Directions for horizontal and vertical movement
+                      (1, 1), (1, -1), (-1, 1), (-1, -1)]  # Directions for diagonal movement
 
+        # Iterate over each direction to explore potential moves
         for dx, dy in directions:
-            for step in range(1, 8):  # A queen can move up to 7 squares in any direction
-                new_x = x + dx * step
-                new_y = y + dy * step
+            # Attempt to move in this direction for up to 7 squares (the maximum on a chess board)
+            for step in range(1, 8):
+                new_x = x + dx * step  # Calculate the new x-coordinate based on the direction and step distance
+                new_y = y + dy * step  # Calculate the new y-coordinate similarly
+
+                # Check if the new coordinates are still within the bounds of the board
                 if 0 <= new_x < 8 and 0 <= new_y < 8:
-                    # Use board[new_x, new_y] to access the cell
+                    # Check if the target square is empty
                     if board[new_x, new_y] is None:
-                        moves.append((new_x, new_y))
+                        moves.append((new_x, new_y))  # If so, it's a valid move and is added to the moves list
                     else:
-                        # If there's a piece of different color, it can be captured
+                        # If the target square is not empty and contains a piece of a different color
                         if board[new_x, new_y].color != self.color:
-                            moves.append((new_x, new_y))
-                        break  # Stop if there's a piece in the way
+                            moves.append((new_x, new_y))  # It's a valid capture move, add to the list
+                        break  # Queen cannot jump over other pieces, so stop checking further along this direction
                 else:
-                    break  # Stop if off the board
+                    break  # If out of bounds, stop checking this direction and move to the next
 
-        return moves
+        return moves  # Return the list of all valid moves determined
 
-# King piece
+
+# Define the King class, which inherits from the ChessPiece base class
 class King(ChessPiece):
+    # Constructor to initialize a King object with its color and starting position
     def __init__(self, color, position):
-        super().__init__(color, position)
+        super().__init__(color, position)  # Call the superclass constructor to set the color and position attributes
 
+    # Method to determine all available moves for the King from its current position
     def available_moves(self, board):
-        moves = []
-        x, y = self.position
+        moves = []  # Initialize an empty list to store potential moves
+        x, y = self.position  # Retrieve the current position of the King on the board
 
-        # Directions a King can move: one square in any direction
-        directions = [(0, 1), (1, 0), (0, -1), (-1, 0),  # Horizontally and vertically
-                      (1, 1), (1, -1), (-1, 1), (-1, -1)]  # Diagonally
+        # Define the eight possible directions in which a King can move: includes one square in every possible direction
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0),  # Directions for horizontal and vertical movement
+                      (1, 1), (1, -1), (-1, 1), (-1, -1)]  # Directions for diagonal movement
 
+        # Iterate over each direction to explore potential moves
         for dx, dy in directions:
-            new_x = x + dx
-            new_y = y + dy
-            if 0 <= new_x < 8 and 0 <= new_y < 8:
-                # Use board[new_x, new_y] to access the cell
-                if board[new_x, new_y] is None or board[new_x, new_y].color != self.color:
-                    moves.append((new_x, new_y))
+            new_x = x + dx  # Calculate the new x-coordinate based on the direction
+            new_y = y + dy  # Calculate the new y-coordinate similarly
 
-        return moves
+            # Check if the new coordinates are still within the bounds of the board
+            if 0 <= new_x < 8 and 0 <= new_y < 8:
+                # Check if the target square is either empty or occupied by an opponent's piece
+                if board[new_x, new_y] is None or board[new_x, new_y].color != self.color:
+                    moves.append((new_x, new_y))  # If so, it's a valid move and is added to the moves list
+
+        return moves  # Return the list of all valid moves determined
+
 
 def draw_board(screen):
     # Draws the squares of the board
@@ -342,6 +378,10 @@ def display_valid_moves(screen, moves):
         circle_position = (SQUARE_SIZE // 2, SQUARE_SIZE // 2)
         pygame.draw.circle(circle_surface, circle_color, circle_position, 15)
         screen.blit(circle_surface, (col * SQUARE_SIZE, row * SQUARE_SIZE))
+
+def if_castle(selected_piece, king_color):
+    if isinstance(selected_piece, King) and selected_piece.color == king_color:
+        pass
 
 # Pygame setup for the graphical interface
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
