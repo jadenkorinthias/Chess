@@ -7,6 +7,8 @@ import pygame
 import base64
 import berserk
 
+#this is a comment
+
 #implement items for Lichess API
 token = base64.b64decode(b'bGlwX1hhUmUyczJueEdHTGp4ZERyeERa')
 session = berserk.TokenSession(token)
