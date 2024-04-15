@@ -2,6 +2,7 @@ We already have a mostly functioning chest game with movement and check/checkmat
 We would like to add sound effects everywhere: taking peices/ peice movement/end game.
 Additonaly we would like to prevent illegal moves. ex. moving a king that remains in check after move
 Castling needs to be added.
+Modify timer based on gamemode chosen in startscreen (slow = 60 seconds, medium = 30 seconds, fast = 10 seconds)
 We would like to add one player using randomization, but we will see what we can do. OR *Lichess API Bot
 We want to have a functioning timer that counts down and saves for both.
 We want to add En passant move as well.
