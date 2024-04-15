@@ -75,14 +75,17 @@ class ChessBoard:
             self.board[6][row] = Pawn('white', (6, row))
 
     def move_piece(self, piece, new_position):
-        old_x, old_y = piece.position
-        new_x, new_y = new_position
-        self.board[old_x][old_y] = None  # Remove the piece from its old position
-        self.board[new_x][new_y] = piece  # Place the piece at its new position
-        piece.position = new_position  # Update the piece's position attribute
+        old_x, old_y = piece.position  # Get the current position of the piece
+        new_x, new_y = new_position    # Get the new position where the piece will be moved
+        self.board[old_x][old_y] = None  # Remove the piece from its old position by setting that cell to None
+        # Place the piece at its new position on the board
+        # If there was another piece at this position, it is 'captured' by being overwritten and thus removed from the board
+        self.board[new_x][new_y] = piece  
+        piece.position = new_position  # Update the piece's position attribute to reflect its new location
+        # If the moved piece is a pawn and this is its first move, set its 'first_move' attribute to False
         if isinstance(piece, Pawn):
-            piece.first_move = False  # Update the pawn's first_move flag after it moves
-    
+            piece.first_move = False  
+
     def is_in_check(self, king_color):
         # Find the king's position
         king_position = None
@@ -150,18 +153,20 @@ class Pawn(ChessPiece):
         x, y = self.position
         direction = -1 if self.color == 'white' else 1  # Adjusted to use integers for direction
 
-        # Forward move
-        if 0 <= x + direction < 8 and board[x + direction, y] is None:
-            moves.append((x + direction, y))
+        # Check for a standard forward move in chess for a pawn.
+        if 0 <= x + direction < 8 and board[x + direction, y] is None:  # Check if the cell directly in front is within bounds and empty
+            moves.append((x + direction, y))  # Add this move to the list of possible moves
+            # Check if a two-square forward move is allowed (typically used on the pawn's first move)
             if self.first_move and board[x + 2 * direction, y] is None:
-                moves.append((x + 2 * direction, y))
+                moves.append((x + 2 * direction, y))  # Add the two-square move to the list of possible moves
 
-        # Captures
-        for dy in [-1, 1]:  # Diagonal captures
+        # Iterate over possible capture moves, which occur diagonally
+        for dy in [-1, 1]:  # Loop to check both left and right diagonal moves
+            # Ensure the diagonal cell is within the bounds of the board
             if 0 <= y + dy < 8 and 0 <= x + direction < 8:
+                # Check if the diagonal cell is occupied by an opponent's piece
                 if board[x + direction, y + dy] is not None and board[x + direction, y + dy].color != self.color:
-                    moves.append((x + direction, y + dy))
-
+                    moves.append((x + direction, y + dy))  # Add the capture move to the list of possible moves
         return moves
 
 # Rook piece
