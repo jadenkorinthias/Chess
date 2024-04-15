@@ -3,4 +3,5 @@ Just adding this in here in case we need it, also to help each other know when w
 
 Kyle - Added in the chatroom and Updated Main Branch Chess.py with the timer implementation below
     Once the timer reaches 60 seconds, it switches to the other player
-    
+
+    Also added in a Chess with Ai branch for testing purposes
