@@ -13,7 +13,15 @@ Things to do:
 #Contributions: Andrew: Main loop and Functions
 #               Jaden: Start Screen
 #               Kyle: Board, Pieces, and Functions
+
 import pygame
+import base64
+import berserk
+
+
+token = base64.b64decode(b'bGlwX1hhUmUyczJueEdHTGp4ZERyeERa')
+session = berserk.TokenSession(token)
+client = berserk.Client(session)
 
 # Constants for window dimensions
 WINDOW_WIDTH = 1000
