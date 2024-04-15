@@ -379,9 +379,31 @@ def display_valid_moves(screen, moves):
         pygame.draw.circle(circle_surface, circle_color, circle_position, 15)
         screen.blit(circle_surface, (col * SQUARE_SIZE, row * SQUARE_SIZE))
 
-def if_castle(selected_piece, king_color):
-    if isinstance(selected_piece, King) and selected_piece.color == king_color:
-        pass
+def if_castle(king, board): #WIP
+    # Ensure the piece is a King and it has not moved
+    if isinstance(king, King) and not king.has_moved:
+        # Determine the row for castling based on the king's color
+        row = 0 if king.color == 'white' else 7
+
+        # Get the pieces in the king's row
+        row_pieces = board.board[row]
+        
+        king_pos = king.position[1] # Column index of the king
+        rook_positions = [0,7] # Rooks should be at columns 0 and 7
+
+        for pos in rook_positions:
+            rook = row_pieces[pos]
+            # Ensure there's a Rook at the position and it has not moved
+            if isinstance(rook,Rook) and not rook.has_moved:
+                 # Calculate the direction to check for clear path
+                step = 1 if pos > king_pos else -1
+                # Check if the squares between the king and the rook are empty
+                clear_path = all(row_pieces[king_pos + i * step] is None for i in range(1,abs(pos-king_pos)))
+                 # Check if there is a clear path and the king is not in check
+                if clear_path and not board.is_in_check(king.color):
+                    return True # Return True if castling is possible
+    return False # Return False if castling is not possible
+        
 
 # Pygame setup for the graphical interface
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
