@@ -1,14 +1,3 @@
-'''
-Things to do:
-1. DONE, AND TESTED: Add in highlight when chess piece is clicked. Chess piece acts like the user is grabbing it an follows around the mouse while the user has the mouse button pressed down. When released it releases the chess piece where the user drops it and checks if it is a valid spot.
-2. DONE, AND  TESTED: Valid spots. When a user clicks on a chess piece the program will add in small grey and slighly transparent circles 30 pixels wide that will show the user all of the valid moves that it can make.
-3. DONE, ish: managing the overall game state
-4. DONE: turn management
-5. FRICK: checks/checkmates, This is insanely complicated for some reason!!!!
-6. DONE: game-end scenarios.
-7. DONE: start screen
-8. Player move log, on right side.
-'''
 #Code was debugged with GPT-4 and Original work by Andrew, Jaden, and Kyle
 #Contributions: Andrew: Main loop and Functions
 #               Jaden: Start Screen
@@ -18,7 +7,7 @@ import pygame
 import base64
 import berserk
 
-
+#implement items for Lichess API
 token = base64.b64decode(b'bGlwX1hhUmUyczJueEdHTGp4ZERyeERa')
 session = berserk.TokenSession(token)
 client = berserk.Client(session)
