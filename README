@@ -8,10 +8,11 @@ Project proposal slides 4/8: https://docs.google.com/presentation/d/1WaRgAbuTzIS
 
 Things to do:
 
-*Timer
+*Timer - Done
 *En passant
-*Lichess API Bot
-*Castling
+*Lichess API Bot - Removed
+*Random Bot
+*Castling - WIP Kyle
 *Player Log
-*Preventing illegal moves
+*Preventing illegal moves - WIP Kyle
 *Last Move indicator
