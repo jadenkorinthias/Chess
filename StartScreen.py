@@ -1,4 +1,4 @@
-from Chess import chess_main
+import Chess
 import pygame
 import sys
 
@@ -24,7 +24,6 @@ message_font = pygame.font.SysFont(None,30)
 
 # Button text
 buttons = ['Chess', '1 player', '2 players']
-
 
 # Sound
 pygame.mixer.music.load('Calming Jazz to Play Chess.mp3')
@@ -55,33 +54,36 @@ def show_message(message):
     pygame.display.flip() #supdate display
     pygame.time.wait(3000)  # Display the message for 2 seconds
 
-# Game loop
-running = True
-while running:
-    screen.fill(grey)
-    # Draws the squares of the board
-    for row in range(8):
-        for col in range(8):
-            square_color = dgreen if (row + col) % 2 == 0 else grey
-            pygame.draw.rect(screen, square_color, (col * SQUARE_SIZE, (7 - row) * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)) 
-    pygame.draw.rect(screen, (0, 0, 0), (800, 0, 200, 800)) #right black rectangle
-    
-    button_list = draw_buttons() #calls buttons
-    pygame.display.flip() #updates to display everything
+def show_main():
+    # Game loop
+    running = True
+    while running:
+        screen.fill(grey)
+        # Draws the squares of the board
+        for row in range(8):
+            for col in range(8):
+                square_color = dgreen if (row + col) % 2 == 0 else grey
+                pygame.draw.rect(screen, square_color, (col * SQUARE_SIZE, (7 - row) * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)) 
+        pygame.draw.rect(screen, (0, 0, 0), (800, 0, 200, 800)) #right black rectangle
+        
+        button_list = draw_buttons() #calls buttons
+        pygame.display.flip() #updates to display everything
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT: #if its a quitting window
+                pygame.quit() #quit 
+                sys.exit() #end program
+            elif event.type == pygame.MOUSEBUTTONDOWN: #check if mouse is pressed 
+                for button_rect, text in button_list: #loop over rectangle in button list from above
+                    if button_rect.collidepoint(event.pos): #if it overlaps on defined area - essentially clicking
+                        if text == 'Chess':
+                            pass # Call your chess main function
+                        elif text == '1 player':
+                            show_message("Pfft, you really think we have learned enough to code a Chess AI algorithm???")
+                        elif text == '2 players':
+                            Chess.chess_main()  # Or a different function for 2 players
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT: #if its a quitting window
-            pygame.quit() #quit 
-            sys.exit() #end program
-        elif event.type == pygame.MOUSEBUTTONDOWN: #check if mouse is pressed 
-            for button_rect, text in button_list: #loop over rectangle in button list from above
-                if button_rect.collidepoint(event.pos): #if it overlaps on defined area - essentially clicking
-                    if text == 'Chess':
-                        chess_main()  # Call your chess main function
-                    elif text == '1 player':
-                        show_message("Pfft, you really think we have learned enough to code a Chess AI algorithm???")
-                    elif text == '2 players':
-                        chess_main()  # Or a different function for 2 players
+    # Quit Pygame
+    pygame.quit()
 
-# Quit Pygame
-pygame.quit()
+if __name__ == '__main__':
+    show_main()

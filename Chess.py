@@ -6,6 +6,7 @@
 import pygame
 import base64
 import berserk
+import StartScreen
 
 #implement items for Lichess API
 token = base64.b64decode(b'bGlwX1hhUmUyczJueEdHTGp4ZERyeERa')
@@ -426,6 +427,8 @@ def chess_main():
 
     play_again_rect = pygame.Rect(830, 650, 200, 50)
     quit_rect = pygame.Rect(830, 700, 100, 50)
+    menu_rect = pygame.Rect(830, 750, 200, 50)
+    #Main game loop
 
     while True:
         for event in pygame.event.get():
@@ -440,6 +443,9 @@ def chess_main():
                     elif quit_rect.collidepoint(event.pos):
                         pygame.quit()
                         return
+                    elif menu_rect.collidepoint(event.pos):
+                        StartScreen.show_main()
+                        continue
 
                 if not game_over:
                     mouse_pos = event.pos
@@ -516,6 +522,10 @@ def chess_main():
             quit_text = play_again_font.render("Quit", True, (255, 255, 255))
             screen.blit(play_again_text, (830, 650))
             screen.blit(quit_text, (830,700))
+
+            menu_screen_font = pygame.font.SysFont(None, 36)
+            menu_screen_text = menu_screen_font.render("Menu", True, (255,255,255))
+            screen.blit(menu_screen_text,(830,750))
 
         pygame.display.flip()
         clock.tick(60)
