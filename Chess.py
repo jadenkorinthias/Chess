@@ -408,6 +408,7 @@ def if_castle(king, board): #WIP
 
 # Pygame setup for the graphical interface
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+pygame.display.flip() #updates to display everything
 pygame.display.set_caption('Chess Game')
 
 def chess_main():
