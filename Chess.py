@@ -20,6 +20,8 @@ SQUARE_SIZE = 800 // 8  # Assumes a square window for a square chess board
 LGRAY = (211, 211, 211)  # Light gray squares
 DGREEN = (107, 142, 35)  # Dark green squares
 YELLOW = (255, 255, 0)  # Yellow
+WHITE = (255, 255, 255) # White
+FPS = 60
 
 #Icons from www.flaticon.com
 PIECES = {
@@ -490,7 +492,7 @@ def chess_main():
             display_valid_moves(screen, valid_moves)
 
         font = pygame.font.SysFont(None, 36)
-        turn_text = font.render(f"{current_turn.capitalize()}'s Turn", True, (255, 255, 255))
+        turn_text = font.render(f"{current_turn.capitalize()}'s Turn", True, (WHITE))
         screen.blit(turn_text, (830, 50))
 
         #Timer update and display
@@ -505,7 +507,7 @@ def chess_main():
                     current_turn = "white"
                 current_timer = 0
         minutes, seconds = divmod(int(current_timer), 60)
-        timer_text = font.render(f"Timer: {minutes:02}:{seconds:02}", True, (255, 255, 255))
+        timer_text = font.render(f"Timer: {minutes:02}:{seconds:02}", True, (WHITE))
         screen.blit(timer_text, (830, 150))
 
         if game_status:
@@ -518,8 +520,8 @@ def chess_main():
             screen.blit(game_over_text, (100, 350))
 
             play_again_font = pygame.font.SysFont(None, 36)
-            play_again_text = play_again_font.render("Play again?", True, (255, 255, 255))
-            quit_text = play_again_font.render("Quit", True, (255, 255, 255))
+            play_again_text = play_again_font.render("Play again?", True, (WHITE))
+            quit_text = play_again_font.render("Quit", True, (WHITE))
             screen.blit(play_again_text, (830, 650))
             screen.blit(quit_text, (830,700))
 
@@ -528,4 +530,4 @@ def chess_main():
             screen.blit(menu_screen_text,(830,750))
 
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(FPS)
