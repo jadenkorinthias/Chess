@@ -5,3 +5,5 @@ Kyle - Added in the chatroom and Updated Main Branch Chess.py with the timer imp
     Once the timer reaches 60 seconds, it switches to the other player
 
     Also added in a Chess with Ai branch for testing purposes
+
+Kyle - Added in menu button to give users ability to return to the main menu
