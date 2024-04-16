@@ -381,7 +381,7 @@ def display_valid_moves(screen, moves):
         pygame.draw.circle(circle_surface, circle_color, circle_position, 15)
         screen.blit(circle_surface, (col * SQUARE_SIZE, row * SQUARE_SIZE))
 
-def if_castle(king, board): #WIP
+def if_castle(king, board): #WIP Kyle
     # Ensure the piece is a King and it has not moved
     if isinstance(king, King) and not king.has_moved:
         # Determine the row for castling based on the king's color
@@ -405,6 +405,12 @@ def if_castle(king, board): #WIP
                 if clear_path and not board.is_in_check(king.color):
                     return True # Return True if castling is possible
     return False # Return False if castling is not possible
+
+def draw_castle_moves(screen, moves): #WIP Kyle
+    pass
+    for move in moves:
+        x, y = (move)
+        pygame.draw.circle(screen, YELLOW, (x, y), pygame.Surface((SQUARE_SIZE, SQUARE_SIZE), pygame.SRCALPHA))
 
 # Pygame setup for the graphical interface
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -491,6 +497,13 @@ def chess_main():
         if selected_piece:
             highlight_selected_piece(screen, selected_pos)
             display_valid_moves(screen, valid_moves)
+
+        if current_turn == King.color and if_castle(King.available_moves, board): #WIP Kyle
+            pass
+            #TODO: Add in logic to show the user the possible moves for castling
+            #TODO: Draw in circles to show available moves and add in castling to legal moves list
+            castle_moves = Rook.available_moves(Rook, board)
+            draw_castle_moves(screen, castle_moves)
 
         font = pygame.font.SysFont(None, 36)
         turn_text = font.render(f"{current_turn.capitalize()}'s Turn", True, (WHITE))
