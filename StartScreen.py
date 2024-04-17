@@ -74,13 +74,13 @@ def show_main():
                 sys.exit() #end program
             elif event.type == pygame.MOUSEBUTTONDOWN: #check if mouse is pressed 
                 for button_rect, text in button_list: #loop over rectangle in button list from above
-                    if button_rect.collidepoint(event.pos): #if it overlaps on defined area - essentially clicking
-                        if text == 'Chess':
-                            pass # Call your chess main function
-                        elif text == '1 player':
-                            show_message("Pfft, you really think we have learned enough to code a Chess AI algorithm???")
-                        elif text == '2 players':
-                            Chess.chess_main()  # Or a different function for 2 players
+                        if button_rect.collidepoint(event.pos):
+                            if text == 'Chess':
+                                pass  # this could be a placeholder for another function or feature
+                            elif text == '1 player':
+                                Chess.chess_main(single_player=True)
+                            elif text == '2 players':
+                                Chess.chess_main(single_player=False)
 
     # Quit Pygame
     pygame.quit()

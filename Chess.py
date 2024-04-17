@@ -7,6 +7,7 @@ import pygame
 import base64
 import berserk
 import StartScreen
+import random
 
 #implement items for Lichess API
 token = base64.b64decode(b'bGlwX1hhUmUyczJueEdHTGp4ZERyeERa')
@@ -415,12 +416,28 @@ def draw_castle_moves(screen, moves): #WIP Kyle
         x, y = (move)
         pygame.draw.circle(screen, YELLOW, (x, y), pygame.Surface((SQUARE_SIZE, SQUARE_SIZE), pygame.SRCALPHA))
 
+def bot_move(board):
+    all_moves = []
+    for row in range(8):
+        for col in range(8):
+            piece = board[row, col]
+            if piece and piece.color == 'black':
+                moves = piece.available_moves(board)
+                for move in moves:
+                    all_moves.append((piece, move))
+
+    if all_moves:
+        piece, move = random.choice(all_moves)
+        board.move_piece(piece, move)
+        return True
+    return False
+
 # Pygame setup for the graphical interface
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.flip() #updates to display everything
 pygame.display.set_caption('Chess Game')
 
-def chess_main():
+def chess_main(single_player=False):
     board = ChessBoard()
     clock = pygame.time.Clock()
     selected_piece = None
@@ -428,6 +445,7 @@ def chess_main():
     valid_moves = []
     current_turn = 'white'
     game_status = ""
+    bot_active = single_player
     game_over = False
 
     #Timer setup for both players
@@ -494,7 +512,19 @@ def chess_main():
                         else:
                             selected_piece = None
                             valid_moves = []
-
+            pygame.time.wait(random.randint(1,3))
+            if bot_active and current_turn == 'black':  # Bot's turn logic outside the event loop
+                if bot_move(board):
+                    current_turn = 'white'
+                if board.is_in_check('white'):
+                    if board.is_checkmate('white'):
+                        game_status = "Checkmate"
+                        game_over = True
+                    else:
+                        game_status = "Check"
+                else:
+                    game_status = ""
+                    
         screen.fill(pygame.Color("white"))
         draw_board(screen)
         draw_pieces(screen, board)
