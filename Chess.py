@@ -173,8 +173,7 @@ class Pawn(ChessPiece):
                 # Check if the diagonal cell is occupied by an opponent's piece
                 if board[x + direction, y + dy] is not None and board[x + direction, y + dy].color != self.color:
                     moves.append((x + direction, y + dy))  # Add the capture move to the list of possible moves
-                    capture = True
-        return moves, capture
+        return moves
 
 # Define the Rook piece, inheriting from the ChessPiece base class
 class Rook(ChessPiece):
@@ -204,12 +203,11 @@ class Rook(ChessPiece):
                     # If the target square is occupied by an opponent's piece, the move is valid and captures that piece
                     elif board[new_x, new_y].color != self.color:
                         moves.append((new_x, new_y))  # Add the capturing move to the list
-                        capture = True
                         break  # Stop checking further in this direction since the Rook cannot jump over pieces
                     else:
                         break  # If the square is occupied by a piece of the same color, stop checking this direction
 
-        return moves, capture  # Return the list of all valid moves
+        return moves  # Return the list of all valid moves
 
 # Define the Knight piece, inheriting from the ChessPiece base class
 class Knight(ChessPiece):
@@ -235,12 +233,10 @@ class Knight(ChessPiece):
             # Check if the new position is within the bounds of the chess board
             if 0 <= new_x < 8 and 0 <= new_y < 8:
                 # Check if the target square is either empty or occupied by an opponent's piece
-                if board[new_x, new_y] is None:
+                if board[new_x, new_y] is None or board[new_x, new_y].color != self.color:
                     moves.append((new_x, new_y))  # Add the move to the list of valid moves if the square is valid for movement
-                    
-                if  board[new_x, new_y].color != self.color:
-                    capture = True
-        return moves,capture  # Return the list of all valid moves
+
+        return moves  # Return the list of all valid moves
 
 
 # Define the Bishop class, which inherits from the ChessPiece base class
@@ -273,12 +269,11 @@ class Bishop(ChessPiece):
                         # If the target square is not empty and contains a piece of a different color
                         if board[new_x, new_y].color != self.color:
                             moves.append((new_x, new_y))  # It's a valid capture move, add to the list
-                            capture = True
                         break  # Bishop cannot jump over other pieces, so stop checking further along this direction
                 else:
                     break  # If out of bounds, stop checking this direction and move to the next
 
-        return moves,capture  # Return the list of all valid moves determined
+        return moves  # Return the list of all valid moves determined
 
 
 # Define the Queen class, which inherits from the ChessPiece base class
@@ -312,12 +307,11 @@ class Queen(ChessPiece):
                         # If the target square is not empty and contains a piece of a different color
                         if board[new_x, new_y].color != self.color:
                             moves.append((new_x, new_y))  # It's a valid capture move, add to the list
-                            capture = True
                         break  # Queen cannot jump over other pieces, so stop checking further along this direction
                 else:
                     break  # If out of bounds, stop checking this direction and move to the next
 
-        return moves, capture  # Return the list of all valid moves determined
+        return moves  # Return the list of all valid moves determined
 
 
 # Define the King class, which inherits from the ChessPiece base class
@@ -343,12 +337,10 @@ class King(ChessPiece):
             # Check if the new coordinates are still within the bounds of the board
             if 0 <= new_x < 8 and 0 <= new_y < 8:
                 # Check if the target square is either empty or occupied by an opponent's piece
-                if board[new_x, new_y] is None:
+                if board[new_x, new_y] is None or board[new_x, new_y].color != self.color:
                     moves.append((new_x, new_y))  # If so, it's a valid move and is added to the moves list
-                if board[new_x, new_y].color != self.color:
-                    moves.append((new_x, new_y))
-                    capture = True
-        return moves, capture  # Return the list of all valid moves determined
+
+        return moves  # Return the list of all valid moves determined
 
 
 def draw_board(screen):
@@ -474,14 +466,9 @@ def chess_main():
                         row = mouse_pos[1] // SQUARE_SIZE
                         if selected_piece and (row, col) in valid_moves:
                             board.move_piece(selected_piece, (row, col))
-                            #Play moving sound after player has moved
+                            #After moving the piece and changing turns update the timer for the next player
                             pygame.mixer.music.load("Sounds/move-self.mp3")
                             pygame.mixer_music.play(0)
-                            #if capture return true, play capture sound
-                            if capture:
-                                pygame.mixer.music.load("Sounds/capture.mp3")
-                                pygame.mixer_music.play(0)
-                            # Update the timer for the next player
                             current_timer = timers[current_turn] 
                             # Check if the king is missing after the move
                             if not board.is_king_present('white') or not board.is_king_present('black'):
