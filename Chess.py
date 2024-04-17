@@ -498,13 +498,6 @@ def chess_main():
             highlight_selected_piece(screen, selected_pos)
             display_valid_moves(screen, valid_moves)
 
-        if current_turn == King.color and if_castle(King.available_moves, board): #WIP Kyle
-            pass
-            #TODO: Add in logic to show the user the possible moves for castling
-            #TODO: Draw in circles to show available moves and add in castling to legal moves list
-            castle_moves = Rook.available_moves(Rook, board)
-            draw_castle_moves(screen, castle_moves)
-
         font = pygame.font.SysFont(None, 36)
         turn_text = font.render(f"{current_turn.capitalize()}'s Turn", True, (WHITE))
         screen.blit(turn_text, (830, 50))
