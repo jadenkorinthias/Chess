@@ -432,12 +432,40 @@ def bot_move(board):
         return True
     return False
 
+def create_bot_game(client, level=1, color='black'):
+    """Create a game against Lichess bot with specified difficulty and color."""
+    game_options = {
+        'level': level,
+        'color': color
+    }
+    return client.challenges.create_ai(game_options)
+
+def make_move(client, game_id, move):
+    """Make a move in an ongoing game specified by game_id."""
+    try:
+        client.board.make_move(game_id, move)
+    except Exception as e:
+        print("Error making move:", e)
+
+def get_latest_move(client, game_id):
+    """Fetch the latest moves of the game."""
+    try:
+        game_state = client.games.export(game_id)
+        moves = game_state['moves'].split()
+        return moves[-1] if moves else None
+    except Exception as e:
+        print("Error fetching game state:", e)
+        return None
+
+
 # Pygame setup for the graphical interface
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.flip() #updates to display everything
 pygame.display.set_caption('Chess Game')
 
 def chess_main(single_player=False):
+    game_info = create_bot_game(client)
+    game_id = game_info['id']
     board = ChessBoard()
     clock = pygame.time.Clock()
     selected_piece = None
