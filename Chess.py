@@ -8,7 +8,6 @@ import base64
 import berserk
 import StartScreen
 import random
-from copy import deepcopy
 
 #implement items for Lichess API
 token = base64.b64decode(b'bGlwX1hhUmUyczJueEdHTGp4ZERyeERa')
@@ -56,6 +55,11 @@ class ChessBoard:
     def __getitem__(self, pos):
         x, y = pos
         return self.board[x][y]
+    
+    def __setitem__(self, position, value):
+        x, y = position
+        self.board[x][y] = value
+
 
     def initialize_pieces(self):
         # Initialize black pieces
@@ -418,56 +422,71 @@ def draw_castle_moves(screen, moves): #WIP Kyle
         pygame.draw.circle(screen, YELLOW, (x, y), pygame.Surface((SQUARE_SIZE, SQUARE_SIZE), pygame.SRCALPHA))
 
 def bot_move(board):
+    game_over = False
     all_moves = []
     for row in range(8):
         for col in range(8):
             piece = board[(row, col)]
-            if piece and piece.color == 'black':
+            if piece and piece.color == 'black':  # Ensure we're only moving black pieces
                 moves = piece.available_moves(board)
                 for move in moves:
                     score = 0
                     target_x, target_y = move
 
-                    # Capture opponent's piece
-                    if board[(target_x, target_y)] is not None:
-                        piece_type = type(board[(target_x, target_y)])
-                        score += 10 * (1 + (1 if piece_type.__name__ == 'Queen' else 0))  # Higher score for capturing high-value pieces
+                    # Temporarily make the move to evaluate it
+                    captured_piece = board[(target_x, target_y)]  # Capture the piece if there is one
+                    original_piece = board[(row, col)]
+                    board[(row, col)] = None
+                    board[(target_x, target_y)] = piece
+                    original_position = piece.position
+                    piece.position = (target_x, target_y)
 
-                    # Control the center of the board
-                    if (2 <= target_x <= 5) and (2 <= target_y <= 5):
-                        score += 3  # Central squares are more valuable
+                    # Check for check condition after move
+                    if not board.is_in_check('black'):
+                        # Capture opponent's piece
+                        if captured_piece:
+                            score += 10 * (5 if isinstance(captured_piece, Queen) else 1)  # Higher value for capturing more valuable pieces
 
-                    # Develop minor pieces (Knights and Bishops)
-                    if isinstance(piece, (Knight, Bishop)):
-                        # Check if in starting positions
-                        if (piece.color == 'black' and row == 0) or (piece.color == 'white' and row == 7):
-                            score += 2
+                        # Control the center of the board
+                        if 2 <= target_x <= 5 and 2 <= target_y <= 5:
+                            score += 1  # Central squares are more valuable
 
-                    # Keeping the king safe (simple distance measurement for example)
-                    if isinstance(piece, King):
-                        distance_to_center = max(abs(3.5 - target_x), abs(3.5 - target_y))
-                        score -= distance_to_center  # Less score for being far from center
+                        # Penalize the move if it exposes the piece to capture
+                        for opp_row in range(8):
+                            for opp_col in range(8):
+                                opp_piece = board[(opp_row, opp_col)]
+                                if opp_piece and opp_piece.color != 'black' and (target_x, target_y) in opp_piece.available_moves(board):
+                                    score -= 10  # Penalize moves that lead to potential capture
+                    else:
+                        score -= 50  # Highly penalize moves that leave or put king in check
 
-                    # Check if the move is a checkmate
-                    if board.is_checkmate():
-                        score += 1000000  # Checkmate is the best move
-
-                    # Add the move and its score to the list
+                    # Undo the move
+                    board[(row, col)] = original_piece
+                    board[(target_x, target_y)] = captured_piece
+                    piece.position = original_position
+                    # Add the move and its score to the list if it's a legal move
                     all_moves.append((piece, move, score))
-
+    print(all_moves)
     # Select the move with the highest score
     if all_moves:
-        piece, move, _ = max(all_moves, key=lambda x: x[2])
-        pygame.display.flip()  # Update display before pausing
-        pygame.time.wait(1000)  # Wait for 1000 milliseconds (1 second)
+        piece, best_move, _ = max(all_moves, key=lambda x: x[2])
+        # Make the actual move
+        board.move_piece(piece, best_move)
+        opponent_color = 'white'  # Assuming black is the bot
+        # Check if the move resulted in a check or a checkmate
+        in_check = board.is_in_check(opponent_color)
+        king_present = board.is_king_present(opponent_color)
 
-        #TODO: Check to see if board is in check, or if move is valid, or if move will result in a check
-
-        # Make the move
-        board.move_piece(piece, move)
+        # Print statements to debug or to log the game state
+        if not king_present:
+            print("King captured!")
+            return game_over == True
+        elif in_check:
+            print("Check!")
+        
         return True
-    return False
 
+    return False  # No valid moves were available
 
 
 # Pygame setup for the graphical interface
