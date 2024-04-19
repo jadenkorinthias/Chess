@@ -92,7 +92,7 @@ class ChessBoard:
         piece.position = new_position  # Update the piece's position attribute to reflect its new location
         # If the moved piece is a pawn and this is its first move, set its 'first_move' attribute to False
         if isinstance(piece, Pawn):
-            piece.first_move = False  
+            piece.first_move = False
 
     def is_in_check(self, king_color):
         # Find the king's position
@@ -448,12 +448,22 @@ def bot_move(board):
                         distance_to_center = max(abs(3.5 - target_x), abs(3.5 - target_y))
                         score -= distance_to_center  # Less score for being far from center
 
+                    # Check if the move is a checkmate
+                    if board.is_checkmate():
+                        score += 1000000  # Checkmate is the best move
+
                     # Add the move and its score to the list
                     all_moves.append((piece, move, score))
 
     # Select the move with the highest score
     if all_moves:
         piece, move, _ = max(all_moves, key=lambda x: x[2])
+        pygame.display.flip()  # Update display before pausing
+        pygame.time.wait(1000)  # Wait for 1000 milliseconds (1 second)
+
+        #TODO: Check to see if board is in check, or if move is valid, or if move will result in a check
+
+        # Make the move
         board.move_piece(piece, move)
         return True
     return False
@@ -515,6 +525,7 @@ def chess_main(single_player=False):
                             #After moving the piece and changing turns update the timer for the next player
                             pygame.mixer.music.load("Sounds/move-self.mp3")
                             pygame.mixer_music.play(0)
+                        
                             current_timer = timers[current_turn] 
                             # Check if the king is missing after the move
                             if not board.is_king_present('white') or not board.is_king_present('black'):
@@ -542,8 +553,6 @@ def chess_main(single_player=False):
                             valid_moves = []
             if bot_active and current_turn == 'black':  # Bot's turn logic outside the event loop
                 if bot_move(board):
-                    pygame.display.flip()  # Update display before pausing
-                    pygame.time.wait(1000)  # Wait for 1000 milliseconds (1 second)
                     current_turn = 'white'
                 if board.is_in_check('white'):
                     if board.is_checkmate('white'):
