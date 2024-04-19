@@ -8,6 +8,7 @@ import base64
 import berserk
 import StartScreen
 import random
+from copy import deepcopy
 
 #implement items for Lichess API
 token = base64.b64decode(b'bGlwX1hhUmUyczJueEdHTGp4ZERyeERa')
@@ -420,17 +421,44 @@ def bot_move(board):
     all_moves = []
     for row in range(8):
         for col in range(8):
-            piece = board[row, col]
+            piece = board[(row, col)]
             if piece and piece.color == 'black':
                 moves = piece.available_moves(board)
                 for move in moves:
-                    all_moves.append((piece, move))
+                    score = 0
+                    target_x, target_y = move
 
+                    # Capture opponent's piece
+                    if board[(target_x, target_y)] is not None:
+                        piece_type = type(board[(target_x, target_y)])
+                        score += 10 * (1 + (1 if piece_type.__name__ == 'Queen' else 0))  # Higher score for capturing high-value pieces
+
+                    # Control the center of the board
+                    if (2 <= target_x <= 5) and (2 <= target_y <= 5):
+                        score += 3  # Central squares are more valuable
+
+                    # Develop minor pieces (Knights and Bishops)
+                    if isinstance(piece, (Knight, Bishop)):
+                        # Check if in starting positions
+                        if (piece.color == 'black' and row == 0) or (piece.color == 'white' and row == 7):
+                            score += 2
+
+                    # Keeping the king safe (simple distance measurement for example)
+                    if isinstance(piece, King):
+                        distance_to_center = max(abs(3.5 - target_x), abs(3.5 - target_y))
+                        score -= distance_to_center  # Less score for being far from center
+
+                    # Add the move and its score to the list
+                    all_moves.append((piece, move, score))
+
+    # Select the move with the highest score
     if all_moves:
-        piece, move = random.choice(all_moves)
+        piece, move, _ = max(all_moves, key=lambda x: x[2])
         board.move_piece(piece, move)
         return True
     return False
+
+
 
 # Pygame setup for the graphical interface
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -512,9 +540,10 @@ def chess_main(single_player=False):
                         else:
                             selected_piece = None
                             valid_moves = []
-            pygame.time.wait(random.randint(1,3))
             if bot_active and current_turn == 'black':  # Bot's turn logic outside the event loop
                 if bot_move(board):
+                    pygame.display.flip()  # Update display before pausing
+                    pygame.time.wait(1000)  # Wait for 1000 milliseconds (1 second)
                     current_turn = 'white'
                 if board.is_in_check('white'):
                     if board.is_checkmate('white'):
