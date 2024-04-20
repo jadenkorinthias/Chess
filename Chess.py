@@ -6,6 +6,7 @@
 import pygame
 import base64
 import StartScreen
+import random
 
 #sound setup
 capture = pygame.mixer.music.load("Sounds/capture.mp3")
