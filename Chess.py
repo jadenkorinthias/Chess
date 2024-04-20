@@ -45,6 +45,7 @@ class ChessBoard:
     def __init__(self):
         self.board = [[None for row in range(8)] for col in range(8)]
         self.initialize_pieces()
+        self.last_move_end = None # Store position of the end of the last move
 
     def __getitem__(self, pos):
         x, y = pos
@@ -83,6 +84,9 @@ class ChessBoard:
         # If there was another piece at this position, it is 'captured' by being overwritten and thus removed from the board
         self.board[new_x][new_y] = piece  
         piece.position = new_position  # Update the piece's position attribute to reflect its new location
+
+        self.last_move_end = (new_y, new_x) # Record the end position of the last move
+
         # If the moved piece is a pawn and this is its first move, set its 'first_move' attribute to False
         if isinstance(piece, Pawn):
             piece.first_move = False  
@@ -338,12 +342,14 @@ class King(ChessPiece):
         return moves  # Return the list of all valid moves determined
 
 
-def draw_board(screen):
+def draw_board(screen, board_obj):
     # Draws the squares of the board
     for row in range(8):
         for col in range(8):
             square_color = DGREEN if (row + col) % 2 == 0 else LGRAY
-            pygame.draw.rect(screen, square_color, (col * SQUARE_SIZE, (7 - row) * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+            if (col, row) == board_obj.last_move_end:
+                square_color = YELLOW  # Highlight color
+            pygame.draw.rect(screen, square_color, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
     pygame.draw.rect(screen, (0, 0, 0), (800, 0, 200, 800))
 
 def draw_pieces(screen, board_obj):
@@ -445,6 +451,8 @@ def one_player_chess_main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if game_over:
                     if play_again_rect.collidepoint(event.pos):
+                        board.last_move_start = None
+                        board.last_move_end = None
                         one_player_chess_main()
                         continue
                     elif quit_rect.collidepoint(event.pos):
@@ -493,7 +501,7 @@ def one_player_chess_main():
                             valid_moves = []
         
         screen.fill(pygame.Color("white"))
-        draw_board(screen)
+        draw_board(screen, board)
         draw_pieces(screen, board)
 
         if selected_piece:
@@ -601,7 +609,7 @@ def chess_main():
                             #After moving the piece and changing turns update the timer for the next player
                             pygame.mixer.music.load("Sounds/move-self.mp3")
                             pygame.mixer_music.play(0)
-                            current_timer = timers[current_turn] 
+                            current_timer = timers[current_turn]
                             # Check if the king is missing after the move
                             if not board.is_king_present('white') or not board.is_king_present('black'):
                                 game_status = "Game Over!"
@@ -628,7 +636,7 @@ def chess_main():
                             valid_moves = []
 
         screen.fill(pygame.Color("white"))
-        draw_board(screen)
+        draw_board(screen, board)
         draw_pieces(screen, board)
 
         if selected_piece:
