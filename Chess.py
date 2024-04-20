@@ -426,7 +426,6 @@ def bot_move(board):
                 for move in moves:
                     score = 0
                     target_x, target_y = move
-
                     # Temporarily make the move to evaluate it
                     captured_piece = board[(target_x, target_y)]  # Capture the piece if there is one
                     original_piece = board[(row, col)]
@@ -434,17 +433,14 @@ def bot_move(board):
                     board[(target_x, target_y)] = piece
                     original_position = piece.position
                     piece.position = (target_x, target_y)
-
                     # Check for check condition after move
                     if not board.is_in_check('black'):
                         # Capture opponent's piece
                         if captured_piece:
                             score += 10 * (5 if isinstance(captured_piece, Queen) else 1)  # Higher value for capturing more valuable pieces
-
                         # Control the center of the board
                         if 2 <= target_x <= 5 and 2 <= target_y <= 5:
                             score += 1  # Central squares are more valuable
-
                         # Penalize the move if it exposes the piece to capture
                         for opp_row in range(8):
                             for opp_col in range(8):
@@ -476,10 +472,8 @@ def bot_move(board):
             print("King captured!")
             return game_over == True
         elif in_check:
-            print("Check!")
-        
+            print("Check!")        
         return True
-
     return False  # No valid moves were available
 
 

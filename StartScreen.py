@@ -26,8 +26,7 @@ message_font = pygame.font.SysFont(None,30)
 buttons = ['Chess', '1 player', '2 players']
 
 # Sound
-pygame.mixer.music.load('Sounds/Calming Jazz to Play Chess.mp3')
-pygame.mixer.music.play(-1)
+
 
 def draw_buttons(): 
     button_list = [] #empty list to store
