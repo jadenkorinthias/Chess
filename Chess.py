@@ -414,6 +414,143 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.flip() #updates to display everything
 pygame.display.set_caption('Chess Game')
 
+def one_player_chess_main():
+    board = ChessBoard()
+    #clock = pygame.time.Clock()
+    selected_piece = None
+    selected_pos = None
+    valid_moves = []
+    current_turn = 'white'
+    game_status = ""
+    game_over = False
+
+    #Timer setup for both players
+    #initial_timer = 0 #300 seconds = 5 minuites
+    #timers = {'white': initial_timer, 'black': initial_timer}
+
+    #Initialize current_timer for the starting turn
+    #current_timer = timers[current_turn]
+
+    play_again_rect = pygame.Rect(830, 650, 200, 50)
+    quit_rect = pygame.Rect(830, 700, 100, 50)
+    menu_rect = pygame.Rect(830, 750, 200, 50)
+    #Main game loop
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if game_over:
+                    if play_again_rect.collidepoint(event.pos):
+                        one_player_chess_main()
+                        continue
+                    elif quit_rect.collidepoint(event.pos):
+                        pygame.quit()
+                        return
+                    elif menu_rect.collidepoint(event.pos):
+                        StartScreen.show_main()
+                        continue
+
+                if not game_over:
+                    mouse_pos = event.pos
+                    if mouse_pos[0] < 800:
+                        col = mouse_pos[0] // SQUARE_SIZE
+                        row = mouse_pos[1] // SQUARE_SIZE
+                        if selected_piece and (row, col) in valid_moves:
+                            board.move_piece(selected_piece, (row, col))
+                            pygame.mixer.music.load("Sounds/move-self.mp3")
+                            pygame.mixer_music.play(0)
+                            #current_timer = timers[current_turn] 
+                            # Check if the king is missing after the move
+                            
+                            if not board.is_king_present('white') or not board.is_king_present('black'):
+                                game_status = "Game Over!"
+                                game_over = True
+                            else:
+                                opponent_color = 'black' if current_turn == 'white' else 'white'
+                                if board.is_in_check(opponent_color):
+                                    if board.is_checkmate(opponent_color):
+                                        game_status = "Checkmate"
+                                        game_over = True
+                                    else:
+                                        game_status = "Check"
+                                else:
+                                    game_status = ""
+                                current_turn = opponent_color
+                           
+                            selected_piece = None
+                            valid_moves = []
+                        
+                        selected_pos = (row, col)
+                        selected_piece = board[selected_pos]
+                        if selected_piece and selected_piece.color == current_turn:
+                            valid_moves = selected_piece.available_moves(board)
+                        else:
+                            selected_piece = None
+                            valid_moves = []
+        
+        screen.fill(pygame.Color("white"))
+        draw_board(screen)
+        draw_pieces(screen, board)
+
+        if selected_piece:
+            highlight_selected_piece(screen, selected_pos)
+            display_valid_moves(screen, valid_moves)
+
+        font = pygame.font.SysFont(None, 36)
+        turn_text = font.render(f"{current_turn.capitalize()}'s Turn", True, (WHITE))
+        screen.blit(turn_text, (830, 50))
+
+        #Timer update and display
+        #time_passed = (clock.tick(60) / 1000.0) * 1.95 #Time passed in seconds
+        #if not game_over and current_turn:
+            #current_timer += time_passed
+            #TODO: Add in slider for time
+            #if current_timer >= 60:
+                #if current_turn == "white":
+                    #current_turn = "black"
+                #else:
+                    #current_turn = "white"
+                #current_timer = 0
+        #minutes, seconds = divmod(int(current_timer), 60)
+        #timer_text = font.render(f"Timer: {minutes:02}:{seconds:02}", True, (WHITE))
+        #screen.blit(timer_text, (830, 150))
+
+        if game_status:
+            status_text = font.render(game_status, True, (255, 0, 0))
+            screen.blit(status_text, (830, 100))
+
+        if game_over:
+            game_over_font = pygame.font.SysFont(None, 150)
+            game_over_text = game_over_font.render("Game Over!", True, (255, 0, 0))
+            screen.blit(game_over_text, (100, 350))
+
+            play_again_font = pygame.font.SysFont(None, 36)
+            play_again_text = play_again_font.render("Play again?", True, (WHITE))
+            quit_text = play_again_font.render("Quit", True, (WHITE))
+            screen.blit(play_again_text, (830, 650))
+            screen.blit(quit_text, (830,700))
+
+            menu_screen_font = pygame.font.SysFont(None, 36)
+            menu_screen_text = menu_screen_font.render("Menu", True, (255,255,255))
+            screen.blit(menu_screen_text,(830,750))
+
+        if current_turn == 'black' and not game_over:
+            black_pieces = [piece for row in board.board for piece in row if piece and piece.color == 'black'] #all the black peices going through a loop
+            random_piece = random.choice(black_pieces)
+            potential_moves = random_piece.available_moves(board)
+            if potential_moves:
+                random_move = random.choice(potential_moves)
+                board.move_piece(random_piece, random_move)
+                current_turn = 'white'
+                pygame.mixer.music.load("Sounds/move-self.mp3")
+                pygame.mixer_music.play(0)
+
+        pygame.display.flip()
+
+
 def chess_main():
     board = ChessBoard()
     clock = pygame.time.Clock()
