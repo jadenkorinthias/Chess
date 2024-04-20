@@ -78,7 +78,7 @@ def show_main():
                         if text == 'Chess':
                             pass # Call your chess main function
                         elif text == '1 player':
-                            show_message("Pfft, you really think we have learned enough to code a Chess AI algorithm???")
+                            Chess.one_player_chess_main()
                         elif text == '2 players':
                             Chess.chess_main()  # Or a different function for 2 players
 
