@@ -4,15 +4,7 @@
 #               Kyle: Board, Pieces, and Functions
 
 import pygame
-import base64
-import berserk
 import StartScreen
-import random
-
-#implement items for Lichess API
-token = base64.b64decode(b'bGlwX1hhUmUyczJueEdHTGp4ZERyeERa')
-session = berserk.TokenSession(token)
-client = berserk.Client(session)
 
 #sound setup
 capture = pygame.mixer.music.load("Sounds/capture.mp3")
