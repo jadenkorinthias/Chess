@@ -91,6 +91,13 @@ class ChessBoard:
         if isinstance(piece, Pawn):
             piece.first_move = False  
 
+    def promote_pawn(self, piece, new_position):
+        new_x, new_y = new_position
+        # If pawn has reached the promotion condition
+        if isinstance(piece, Pawn):
+            if (piece.color == 'white' and new_x == 0) or (piece.color == 'black' and new_x == 7):
+                self.board[new_x][new_y] = Queen(piece.color, new_position)
+
     def is_in_check(self, king_color):
         # Find the king's position
         king_position = None
@@ -471,8 +478,8 @@ def one_player_chess_main():
                             board.move_piece(selected_piece, (row, col))
                             pygame.mixer.music.load("Sounds/move-self.mp3")
                             pygame.mixer_music.play(0)
-                            #current_timer = timers[current_turn] 
-                            # Check if the king is missing after the move
+
+                            board.promote_pawn(selected_piece, (row, col)) # Invoking the pawn promotion function
                             
                             if not board.is_king_present('white') or not board.is_king_present('black'):
                                 game_status = "Game Over!"
@@ -610,6 +617,9 @@ def chess_main():
                             pygame.mixer.music.load("Sounds/move-self.mp3")
                             pygame.mixer_music.play(0)
                             current_timer = timers[current_turn]
+
+                            board.promote_pawn(selected_piece, (row, col)) # Invoking the pawn promotion function
+
                             # Check if the king is missing after the move
                             if not board.is_king_present('white') or not board.is_king_present('black'):
                                 game_status = "Game Over!"
