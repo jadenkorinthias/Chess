@@ -43,6 +43,9 @@ class ChessBoard:
     def __init__(self):
         self.board = [[None for row in range(8)] for col in range(8)]
         self.initialize_pieces()
+        self.last_move_end = None
+
+        
 
     def __getitem__(self, pos):
         x, y = pos
@@ -80,6 +83,7 @@ class ChessBoard:
 
     def move_piece(self, piece, new_position):
         piece.has_moved = True
+        
         old_x, old_y = piece.position  # Get the current position of the piece
         new_x, new_y = new_position    # Get the new position where the piece will be moved
         self.board[old_x][old_y] = None  # Remove the piece from its old position by setting that cell to None
@@ -88,6 +92,7 @@ class ChessBoard:
         self.board[new_x][new_y] = piece  
         piece.position = new_position  # Update the piece's position attribute to reflect its new location
         # If the moved piece is a pawn and this is its first move, set its 'first_move' attribute to False
+        self.last_move_end = (new_y, new_x)  # Record the end position of the last move
         if isinstance(piece, Pawn):
             piece.first_move = False
 
@@ -343,14 +348,16 @@ class King(ChessPiece):
 
         return moves  # Return the list of all valid moves determined
 
-
-def draw_board(screen):
+def draw_board(screen, board_obj):
     # Draws the squares of the board
     for row in range(8):
         for col in range(8):
             square_color = DGREEN if (row + col) % 2 == 0 else LGRAY
+            if (col, row) == board_obj.last_move_end:
+                square_color = YELLOW  # Highlight color
             pygame.draw.rect(screen, square_color, (col * SQUARE_SIZE, (7 - row) * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
     pygame.draw.rect(screen, (0, 0, 0), (800, 0, 200, 800))
+
 
 def draw_pieces(screen, board_obj):
     piece_size = (80, 80)  # Size of the piece images
@@ -582,8 +589,12 @@ def chess_main(single_player=False):
                 else:
                     game_status = ""
 
+        board.last_move_start = None
+        board.last_move_end = None
+
+
         screen.fill(pygame.Color("white"))
-        draw_board(screen)
+        draw_board(screen,board)
         draw_pieces(screen, board)
 
         if selected_piece:
