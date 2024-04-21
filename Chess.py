@@ -389,7 +389,7 @@ def display_valid_moves(screen, moves):
         pygame.draw.circle(circle_surface, circle_color, circle_position, 15)
         screen.blit(circle_surface, (col * SQUARE_SIZE, row * SQUARE_SIZE))
 
-def if_castle(king, board): #WIP Kyle
+"""def if_castle(king, board): #WIP Kyle
     # Ensure the piece is a King and it has not moved
     if isinstance(king, King) and not king.has_moved:
         # Determine the row for castling based on the king's color
@@ -412,7 +412,7 @@ def if_castle(king, board): #WIP Kyle
                  # Check if there is a clear path and the king is not in check
                 if clear_path and not board.is_in_check(king.color):
                     return True # Return True if castling is possible
-    return False # Return False if castling is not possible
+    return False # Return False if castling is not possible"""
 
 def draw_castle_moves(screen, moves): #WIP Kyle
     pass
