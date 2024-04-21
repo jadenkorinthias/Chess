@@ -718,7 +718,7 @@ def chess_main(single_player=False):
                             if selected_piece and selected_piece.color == current_turn:
                                 valid_moves = selected_piece.available_moves(board)
                                 if isinstance(selected_piece, King):
-                                    castle_moves = if_castle(selected_piece, board)  # Get castling moves
+                                    #castle_moves = if_castle(selected_piece, board)  # Get castling moves
                                     valid_moves.extend(castle_moves)  # Add castling moves to valid moves
                             else:
                                 selected_piece = None
