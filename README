@@ -39,16 +39,16 @@ Have fun!
 - + we added sounds and pawn promotion as well as last moved piece indicators and a timer to get the game going. 
   
 **Why and how our plan changed:
-- To put it simply, we were not satified with the barebones game and once it was completed we wanted to have more and knew it would make the game even more enjoyable.
-
+- To put it simply, we were not satisfied with the barebones game and once it was completed we wanted to have more and knew it would make the game even more enjoyable.
+- Additionally, 
 
 **Description of difficulties we encountered**
-- We ran into a few little bugs, one for example was in creating the chess bot. For starters we made a randomized bot that took account of all possible moves and just made one.
+- We ran into a few little bugs, one for example was in creating the chess bot. For starters, we made a randomized bot that took account of all possible moves and just made one.
 But this was too easy so we changed it. The next version had values on the moves and the pieces that were moved. This ended up never moving the pawns as they were the least valuable piece.
-We changed it yet again, adding another laying that took into account central moves as more valueable to game control. In the end the bot works at quite a high level and has beaten challengers.
+We changed it yet again, adding another laying that took into account central moves as more valuable to game control. In the end the bot works at quite a high level and has beaten challengers.
 
 Another difficulty we found was working on different versions of the files. We have one central Chess.py file and all three of us were constatly editing code without commiting every step of the way, in the end when it was time
-to piece everything together it was difficult to compile code that required modifications due to differnt source code.
+to piece everything together it was difficult to compile code that required modifications due to different source code.
 
 **Contribution:
 in terms of project management, we organized and delegated our tasks to each member, which included:
@@ -61,14 +61,14 @@ in terms of project management, we organized and delegated our tasks to each mem
 
 **Acknowledgement of any external code or libraries used in the project
 
-
-
 Assesment:
-Jaden - I had the primary responsability to work on the bot, all versions of it too and got the chance to experince firsthand the revision process. I started
-with the random algorithm but knew that more could be done, so I adapted and made changes untill it was satifactory. I am very proud of the end result and it is quite 
+Jaden - I had the primary responsibility to work on the bot, all versions of it too, and got the chance to experience firsthand the revision process. I started
+with the random algorithm but knew that more could be done, so I adapted and made changes until it was satisfactory. I am very proud of the end result and it is quite 
 rewarding to play against. Overall, working in the group was seemless. Work allocation and motivation was never an issue and we constantly communicated and helped eachother
 on our collective/individual bugs/issues. I am proud of everything we accomplished and believe we all went above and beyond. I would give our whole team A's for work ethic and passion. 
 
+Andrew - I had the primary task of managing the main loop, however, as our project plan altered throughout the development of our game, I was also tasked to implement the timer, 
+last move indicator, and pawn promotion. **will expand**
 
 Finally, each member of the team should submit a short paragraph assessing yourself and your teammates.
 I will give you time to do this on the last day of class, in addition to course evaluations. You should indicate
