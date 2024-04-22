@@ -455,17 +455,24 @@ def bot_move(board):
                     score = 0 #keep track of a moves value
                     target_x, target_y = move #location of move
                     captured_piece = board[(target_x, target_y)]  # Capture the piece if there is one
+
+                    # Check if the move would result in the black king capturing the white king
+                    if isinstance(piece, King) and isinstance(captured_piece, King):
+                        continue  # Skip this move as it's invalid
+
                     original_piece = board[(row, col)] #move location
                     board[(row, col)] = None
                     board[(target_x, target_y)] = piece
                     original_position = piece.position
                     piece.position = (target_x, target_y) #stores
+
+                    
                     
                     if not board.is_in_check('black'): #make sure the move does not put black king in check
                         if captured_piece:
                             score += get_piece_value(captured_piece)  # Value of captured piece
                         if 2 <= target_x <= 5 and 2 <= target_y <= 5:
-                            score += 4  # Central squares are more valuable
+                            score += 1  # Central squares are more valuable
                     else:
                         score -= 100  # Penalize moves that put king in check
 
@@ -483,7 +490,6 @@ def bot_move(board):
             # Check if the move resulted in a check or a checkmate
             in_check = board.is_in_check(opponent_color)
             king_present = board.is_king_present(opponent_color)
-
             # Print statements to debug or to log the game state
             if not king_present:
                 print("King captured!")
