@@ -1,6 +1,6 @@
 #Code was debugged with GPT-4 and Original work by Andrew, Jaden, and Kyle
 #Contributions: Andrew: Main loop and Functions
-#               Jaden: Start Screen
+#               Jaden: Start Screen and Bot
 #               Kyle: Board, Pieces, and Functions
 
 import pygame
