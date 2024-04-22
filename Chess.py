@@ -428,7 +428,8 @@ def draw_castle_moves(screen, moves): #WIP Kyle
         x, y = (move)
         pygame.draw.circle(screen, YELLOW, (x, y), pygame.Surface((SQUARE_SIZE, SQUARE_SIZE), pygame.SRCALPHA))
 
-def get_piece_value(piece): #values from wikipedia - worth of each piece
+# This is a very important function in regards to the bot, it allows the bot to maximize its moves by taking into account which pieces are the most valuable in the game.
+def get_piece_value(piece): #values from wikipedia - they are the widely considered chess piece evaluations.
     if isinstance(piece, Pawn):
         return 1
     elif isinstance(piece, Knight):
@@ -442,7 +443,13 @@ def get_piece_value(piece): #values from wikipedia - worth of each piece
     elif isinstance(piece, King):
         return 200
 
-# Bot move logic
+"""
+Jaden: his code defines a function that determines the best move for a black player in the chess game based on mathematical evaluations. 
+It iterates over all black pieces on the board, generates all possible moves for each piece, evaluates each move based on capturing pieces and central square placement, and selects the move with the highest score. 
+If a move is found, it executes it on the board and checks if it resulted in check, checkmate, or king capture. 
+If no valid moves are available, it returns False.
+"""
+
 def bot_move(board):
     game_over = False
     all_moves = [] #empty list to store
@@ -499,14 +506,15 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.flip() #updates to display everything
 pygame.display.set_caption('Chess Game')
 
-# Andrew: chess_main function
-# The chess_main function orchestrates the main gameplay loop for a chess game.
-# It supports single-player (against a bot) and two-player modes, which are determined by the `single_player` flag.
-# The function initializes the game board, clock, and other essential game elements such as pieces, their positions, and valid moves.
-# Players alternate turns, starting with white. Each turn allows the player to select and move pieces according to chess rules.
-# The function also supports the timer for each player, with the game transitioning turns automatically if a player's timer runs out of time.
-# If the game ends, the game displays the status and prompts the user with options to play again, exit to the menu, or quit, using mouse clicks.
-# The function continuously updates the display and checks for game-ending conditions, updating the status and handling the user's game decisions.
+"""Andrew: chess_main function
+The chess_main function orchestrates the main gameplay loop for a chess game.
+It supports single-player (against a bot) and two-player modes, which are determined by the `single_player` flag.
+The function initializes the game board, clock, and other essential game elements such as pieces, their positions, and valid moves.
+Players alternate turns, starting with white. Each turn allows the player to select and move pieces according to chess rules.
+The function also supports the timer for each player, with the game transitioning turns automatically if a player's timer runs out of time.
+If the game ends, the game displays the status and prompts the user with options to play again, exit to the menu, or quit, using mouse clicks.
+The function continuously updates the display and checks for game-ending conditions, updating the status and handling the user's game decisions.
+"""
 
 def chess_main(single_player=False):
 
