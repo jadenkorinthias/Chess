@@ -4,14 +4,6 @@ We hope you enjoy our game!
 
 Project proposal slides 4/8: https://docs.google.com/presentation/d/1WaRgAbuTzISzE_IZ6SV-jtd89hGjRGK5qTM_1wsBIZQ/edit?usp=sharing
 
-Things to do:
-
-*Timer - Done
-*Preventing illegal moves - Done
-*Last Move Indicator - Done
-*Pawn Promotion - Done
-*AI Bot - Done
-
 note: Seems like there is a certain edge case: Bug appears rarely, possibly related to last move indicator in 2 player. Single player operates fine---Possibly correlated with check and checkmate conditions. Also, sometimes interfers with white pawn first move. black can move 2 boxes on first move, white can only move one in certain scenarios. 
 
 ***Player Log**
@@ -23,15 +15,40 @@ note: Seems like there is a certain edge case: Bug appears rarely, possibly rela
 
 **User's Manual
 
+- Welcome! Our game design is simple to run and allows for an easy player experience. Make sure pygame is installed on your computer, if not use the code 'pip install pygame'.
+Once pygame is installed, you are good to go!
+
+Run the StartScreen.py function, and it will pop up a python window with our startscreen running. Make sure your volume is up you should hear some nice jazz.
+
+If you want to know the rules of OUR game, click the 'rules' button and they will appear.
+
+If you want to know the rules of chess itself... here they are https://www.chess.com/learn-how-to-play-chess
+
+Other than that, you can select one or two player gamemodes to either play against our bot, or against a friend. To exit out of a game midway through, click the red x on the top left of the python popup.
+
+If you would like to quit, play again, or go back to menu after a game is over, there are buttons to do so in the bottom right.
+
+Have fun!
+
 **Original Project Plan:
 - to create a simple 2-player chess game
-  - 
+  - We wanted a barebones chess game with piece movement, capturing, check, and checkmate indicators.
 
 **Final Project Plan:
-- to create a chess game: with the option to play 2 players, or versus our AI
-  - 
+- to create a chess game: with the option to play 2 players, or versus our algorithm
+- + we added sounds and pawn promotion as well as last moved piece indicators and a timer to get the game going. 
+  
 **Why and how our plan changed:
-- Description of difficulties we encountered**
+- To put it simply, we were not satified with the barebones game and once it was completed we wanted to have more and knew it would make the game even more enjoyable.
+
+
+**Description of difficulties we encountered**
+- We ran into a few little bugs, one for example was in creating the chess bot. For starters we made a randomized bot that took account of all possible moves and just made one.
+But this was too easy so we changed it. The next version had values on the moves and the pieces that were moved. This ended up never moving the pawns as they were the least valuable piece.
+We changed it yet again, adding another laying that took into account central moves as more valueable to game control. In the end the bot works at quite a high level and has beaten challengers.
+
+Another difficulty we found was working on different versions of the files. We have one central Chess.py file and all three of us were constatly editing code without commiting every step of the way, in the end when it was time
+to piece everything together it was difficult to compile code that required modifications due to differnt source code.
 
 **Contribution:
 in terms of project management, we organized and delegated our tasks to each member, which included:
@@ -43,4 +60,21 @@ in terms of project management, we organized and delegated our tasks to each mem
 - Jaden: Start Screen and Chess Algorithm Bot
 
 **Acknowledgement of any external code or libraries used in the project
+
+
+
+Assesment:
+Jaden - I had the primary responsability to work on the bot, all versions of it too and got the chance to experince firsthand the revision process. I started
+with the random algorithm but knew that more could be done, so I adapted and made changes untill it was satifactory. I am very proud of the end result and it is quite 
+rewarding to play against. Overall, working in the group was seemless. Work allocation and motivation was never an issue and we constantly communicated and helped eachother
+on our collective/individual bugs/issues. I am proud of everything we accomplished and believe we all went above and beyond. I would give our whole team A's for work ethic and passion. 
+
+
+Finally, each member of the team should submit a short paragraph assessing yourself and your teammates.
+I will give you time to do this on the last day of class, in addition to course evaluations. You should indicate
+at least one code file that you had primary responsibility for, and which you feel best represents your coding,
+documentation and creative abilities. Be sure to tell me what grade you would assign to yourself
+and each of your teammates.
+
+
 
