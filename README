@@ -17,22 +17,30 @@ note: Seems like there is a certain edge case: Bug appears rarely, possibly rela
 ***Player Log**
 ***add manual for gamemodes**
 
+**************************************************************************************************************
+
 ***Project Report***
 
-Original Project Plan:
+**User's Manual
+
+**Original Project Plan:
 - to create a simple 2-player chess game
   - 
 
-Final Project Plan:
+**Final Project Plan:
 - to create a chess game: with the option to play 2 players, or versus our AI
   - 
+**Why and how our plan changed:
+- Description of difficulties we encountered**
 
-Contribution:
-
+**Contribution:
 in terms of project management, we organized and delegated our tasks to each member, which included:
 
-Kyle:
+- Kyle: Board, Pieces, and Functions
 
-Andrew: 
+- Andrew: Main loop and Functions
 
-Jaden: 
+- Jaden: Start Screen and Chess Algorithm Bot
+
+**Acknowledgement of any external code or libraries used in the project
+
