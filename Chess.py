@@ -357,7 +357,7 @@ def draw_board(screen, board_obj):
     # Draws the squares of the board
     for row in range(8):
         for col in range(8):
-            square_color = DGREEN if (row + col) % 2 == 0 else LGRAY
+            square_color = LGRAY if (row + col) % 2 == 0 else DGREEN
             if (col, row) == board_obj.last_move_end:
                 square_color = YELLOW  # Highlight color
             pygame.draw.rect(screen, square_color, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
