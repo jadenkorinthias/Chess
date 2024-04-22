@@ -12,12 +12,9 @@ Things to do:
 *Preventing illegal moves - Done
 *Last Move Indicator - Done
 *Pawn Promotion - Done
+*AI Bot - Done
 
 note: Seems like there is a certain edge case: Bug appears rarely, possibly related to last move indicator in 2 player. Single player operates fine---Possibly correlated with check and checkmate conditions. Also, sometimes interfers with white pawn first move. black can move 2 boxes on first move, white can only move one in certain scenarios. 
-
-*Lichess API Bot - Removed due to time constraints
-*AI Bot - Working Model
-*Castling - WIP Kyle
 
 ***Player Log**
 ***add manual for gamemodes**
