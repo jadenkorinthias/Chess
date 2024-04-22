@@ -76,27 +76,25 @@ def load_game_records(filename):
     return game_records
 
 
-def train_model():
+def train_model(model=None):
     # Load game records from a CSV file
     game_records = load_game_records('lichess_db_standard_rated_2013-01.pgn.zst.csv')  # Ensure the file name is correct
     dataset = ChessDataset(game_records)
     loader = DataLoader(dataset, batch_size=32, shuffle=True)
     
     # Initialize the model
-    model = ChessNet()
+    if model is None:
+        model = ChessNet()
+    else:
+        model.load_state_dict(torch.load('model\\epoch=9-step=5780.ckpt'))  # Load the saved model weights
 
     # Setup TensorBoard logger
     logger = TensorBoardLogger("tb_logs", name="Chess AI Log")
 
     # Initialize the Trainer with accelerator for GPU support if available, learning rate monitor, model checkpointing, and TensorBoard logging
-    if torch.cuda.is_available():
-        accelerator = "ddp"
-    else:
-        accelerator = "cpu"
-    
     trainer = pl.Trainer(
         max_epochs=10, 
-        accelerator=accelerator, 
+        accelerator="ddp" if torch.cuda.is_available() else None, 
         callbacks=[
             LearningRateMonitor(logging_interval='step'), 
             ModelCheckpoint(dirpath='./model/', every_n_epochs=1)
@@ -106,6 +104,9 @@ def train_model():
     
     # Train the model
     trainer.fit(model, loader)
+
+    # Save the trained model
+    torch.save(model.state_dict(), 'saved_model.pth')
 
 if __name__ == '__main__':
     train_model()
