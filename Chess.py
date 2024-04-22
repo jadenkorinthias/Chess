@@ -1,12 +1,10 @@
 #Code was debugged with GPT-4 and Original work by Andrew, Jaden, and Kyle
 #Contributions: Andrew: Main loop and Functions
-#               Jaden: Start Screen
+#               Jaden: Start Screen and Bot
 #               Kyle: Board, Pieces, and Functions
 
 import pygame
-import base64
 import StartScreen
-import random
 
 #sound setup
 capture = pygame.mixer.music.load("Sounds/capture.mp3")
@@ -45,11 +43,18 @@ class ChessBoard:
     def __init__(self):
         self.board = [[None for row in range(8)] for col in range(8)]
         self.initialize_pieces()
-        self.last_move_end = None # Store position of the end of the last move
+        self.last_move_end = None
+
+        
 
     def __getitem__(self, pos):
         x, y = pos
         return self.board[x][y]
+    
+    def __setitem__(self, position, value):
+        x, y = position
+        self.board[x][y] = value
+
 
     def initialize_pieces(self):
         # Initialize black pieces
@@ -77,6 +82,8 @@ class ChessBoard:
             self.board[6][row] = Pawn('white', (6, row))
 
     def move_piece(self, piece, new_position):
+        piece.has_moved = True
+        
         old_x, old_y = piece.position  # Get the current position of the piece
         new_x, new_y = new_position    # Get the new position where the piece will be moved
         self.board[old_x][old_y] = None  # Remove the piece from its old position by setting that cell to None
@@ -84,19 +91,10 @@ class ChessBoard:
         # If there was another piece at this position, it is 'captured' by being overwritten and thus removed from the board
         self.board[new_x][new_y] = piece  
         piece.position = new_position  # Update the piece's position attribute to reflect its new location
-
-        self.last_move_end = (new_y, new_x) # Record the end position of the last move
-
         # If the moved piece is a pawn and this is its first move, set its 'first_move' attribute to False
+        self.last_move_end = (new_y, new_x)  # Record the end position of the last move
         if isinstance(piece, Pawn):
-            piece.first_move = False  
-
-    def promote_pawn(self, piece, new_position):
-        new_x, new_y = new_position
-        # If pawn has reached the promotion condition
-        if isinstance(piece, Pawn):
-            if (piece.color == 'white' and new_x == 0) or (piece.color == 'black' and new_x == 7):
-                self.board[new_x][new_y] = Queen(piece.color, new_position)
+            piece.first_move = False
 
     def is_in_check(self, king_color):
         # Find the king's position
@@ -186,6 +184,7 @@ class Rook(ChessPiece):
     # Constructor to initialize a Rook object with a color and its initial position
     def __init__(self, color, position):
         super().__init__(color, position)  # Call the constructor of the superclass (ChessPiece) to set color and position
+        self.has_moved = False
 
     # Method to calculate all available moves for the Rook piece from its current position
     def available_moves(self, board):
@@ -220,7 +219,7 @@ class Knight(ChessPiece):
     # Constructor to initialize a Knight object with a color and its initial position
     def __init__(self, color, position):
         super().__init__(color, position)  # Call the constructor of the superclass (ChessPiece) to set color and position
-
+    
     # Method to calculate all available moves for the Knight piece from its current position
     def available_moves(self, board):
         moves = []  # Initialize an empty list to store all valid moves
@@ -325,6 +324,7 @@ class King(ChessPiece):
     # Constructor to initialize a King object with its color and starting position
     def __init__(self, color, position):
         super().__init__(color, position)  # Call the superclass constructor to set the color and position attributes
+        self.has_moved = False  # Initialize the has_moved attribute to False, indicating that the King has not moved yet
 
     # Method to determine all available moves for the King from its current position
     def available_moves(self, board):
@@ -348,7 +348,6 @@ class King(ChessPiece):
 
         return moves  # Return the list of all valid moves determined
 
-
 def draw_board(screen, board_obj):
     # Draws the squares of the board
     for row in range(8):
@@ -356,8 +355,9 @@ def draw_board(screen, board_obj):
             square_color = DGREEN if (row + col) % 2 == 0 else LGRAY
             if (col, row) == board_obj.last_move_end:
                 square_color = YELLOW  # Highlight color
-            pygame.draw.rect(screen, square_color, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+            pygame.draw.rect(screen, square_color, (col * SQUARE_SIZE, (7 - row) * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
     pygame.draw.rect(screen, (0, 0, 0), (800, 0, 200, 800))
+
 
 def draw_pieces(screen, board_obj):
     piece_size = (80, 80)  # Size of the piece images
@@ -392,30 +392,21 @@ def display_valid_moves(screen, moves):
         pygame.draw.circle(circle_surface, circle_color, circle_position, 15)
         screen.blit(circle_surface, (col * SQUARE_SIZE, row * SQUARE_SIZE))
 
-def if_castle(king, board): #WIP Kyle
-    # Ensure the piece is a King and it has not moved
+def if_castle(king, board):
+    moves = []
     if isinstance(king, King) and not king.has_moved:
-        # Determine the row for castling based on the king's color
         row = 0 if king.color == 'white' else 7
-
-        # Get the pieces in the king's row
-        row_pieces = board.board[row]
-        
-        king_pos = king.position[1] # Column index of the king
-        rook_positions = [0,7] # Rooks should be at columns 0 and 7
+        king_pos = king.position[1]
+        rook_positions = [0, 7]
 
         for pos in rook_positions:
-            rook = row_pieces[pos]
-            # Ensure there's a Rook at the position and it has not moved
-            if isinstance(rook,Rook) and not rook.has_moved:
-                 # Calculate the direction to check for clear path
+            rook = board.board[row][pos]
+            if isinstance(rook, Rook) and not rook.has_moved:
                 step = 1 if pos > king_pos else -1
-                # Check if the squares between the king and the rook are empty
-                clear_path = all(row_pieces[king_pos + i * step] is None for i in range(1,abs(pos-king_pos)))
-                 # Check if there is a clear path and the king is not in check
-                if clear_path and not board.is_in_check(king.color):
-                    return True # Return True if castling is possible
-    return False # Return False if castling is not possible
+                if all(board.board[row][king_pos + i * step] is None for i in range(1, abs(pos-king_pos))) and not board.is_in_check(king.color):
+                    # Add castle move
+                    moves.append((row, pos))
+    return moves
 
 def draw_castle_moves(screen, moves): #WIP Kyle
     pass
@@ -423,171 +414,90 @@ def draw_castle_moves(screen, moves): #WIP Kyle
         x, y = (move)
         pygame.draw.circle(screen, YELLOW, (x, y), pygame.Surface((SQUARE_SIZE, SQUARE_SIZE), pygame.SRCALPHA))
 
+def get_piece_value(piece): #values from wikipedia - worth of each piece
+    if isinstance(piece, Pawn):
+        return 1
+    elif isinstance(piece, Knight):
+        return 3
+    elif isinstance(piece, Bishop):
+        return 3
+    elif isinstance(piece, Rook):
+        return 5
+    elif isinstance(piece, Queen):
+        return 9
+    elif isinstance(piece, King):
+        return 200
+
+# Bot move logic
+def bot_move(board):
+    game_over = False
+    all_moves = [] #empty list to store
+
+    for row in range(8):
+        for col in range(8):
+            piece = board[(row, col)] #piece
+            if piece and piece.color == 'black':  # Ensure we're only moving black pieces
+                moves = piece.available_moves(board) #All availible moves based on piece and location
+                for move in moves:
+                    score = 0 #keep track of a moves value
+                    target_x, target_y = move #location of move
+                    captured_piece = board[(target_x, target_y)]  # Capture the piece if there is one
+                    original_piece = board[(row, col)] #move location
+                    board[(row, col)] = None
+                    board[(target_x, target_y)] = piece
+                    original_position = piece.position
+                    piece.position = (target_x, target_y) #stores
+                    
+                    if not board.is_in_check('black'): #make sure the move does not put black king in check
+                        if captured_piece:
+                            score += get_piece_value(captured_piece)  # Value of captured piece
+                        if 2 <= target_x <= 5 and 2 <= target_y <= 5:
+                            score += 4  # Central squares are more valuable
+                    else:
+                        score -= 100  # Penalize moves that put king in check
+
+                    board[(row, col)] = original_piece
+                    board[(target_x, target_y)] = captured_piece
+                    piece.position = original_position
+                    
+                    all_moves.append((piece, move, score)) #each potential move, which piece is moved and score value
+
+    if all_moves: #lambda allows customizing where the max is found from 
+        piece, best_move, _ = max(all_moves, key=lambda x: x[2]) #max elemnt in the list - based on third part of tuple in list (piece, move, score)
+        board.move_piece(piece, best_move) #if there is any possible moves it makes it
+        opponent_color = 'white'  # Assuming black is the bot
+        in_check = board.is_in_check(opponent_color)
+        king_present = board.is_king_present(opponent_color) 
+
+
 # Pygame setup for the graphical interface
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.flip() #updates to display everything
 pygame.display.set_caption('Chess Game')
 
-def one_player_chess_main():
-    board = ChessBoard()
-    #clock = pygame.time.Clock()
-    selected_piece = None
-    selected_pos = None
-    valid_moves = []
-    current_turn = 'white'
-    game_status = ""
-    game_over = False
-
-    #Timer setup for both players
-    #initial_timer = 0 #300 seconds = 5 minuites
-    #timers = {'white': initial_timer, 'black': initial_timer}
-
-    #Initialize current_timer for the starting turn
-    #current_timer = timers[current_turn]
-
-    play_again_rect = pygame.Rect(830, 650, 200, 50)
-    quit_rect = pygame.Rect(830, 700, 100, 50)
-    menu_rect = pygame.Rect(830, 750, 200, 50)
-    #Main game loop
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                return
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if game_over:
-                    if play_again_rect.collidepoint(event.pos):
-                        board.last_move_start = None
-                        board.last_move_end = None
-                        one_player_chess_main()
-                        continue
-                    elif quit_rect.collidepoint(event.pos):
-                        pygame.quit()
-                        return
-                    elif menu_rect.collidepoint(event.pos):
-                        StartScreen.show_main()
-                        continue
-
-                if not game_over:
-                    mouse_pos = event.pos
-                    if mouse_pos[0] < 800:
-                        col = mouse_pos[0] // SQUARE_SIZE
-                        row = mouse_pos[1] // SQUARE_SIZE
-                        if selected_piece and (row, col) in valid_moves:
-                            board.move_piece(selected_piece, (row, col))
-                            pygame.mixer.music.load("Sounds/move-self.mp3")
-                            pygame.mixer_music.play(0)
-
-                            board.promote_pawn(selected_piece, (row, col)) # Invoking the pawn promotion function
-                            
-                            if not board.is_king_present('white') or not board.is_king_present('black'):
-                                game_status = "Game Over!"
-                                game_over = True
-                            else:
-                                opponent_color = 'black' if current_turn == 'white' else 'white'
-                                if board.is_in_check(opponent_color):
-                                    if board.is_checkmate(opponent_color):
-                                        game_status = "Checkmate"
-                                        game_over = True
-                                    else:
-                                        game_status = "Check"
-                                else:
-                                    game_status = ""
-                                current_turn = opponent_color
-                           
-                            selected_piece = None
-                            valid_moves = []
-                        
-                        selected_pos = (row, col)
-                        selected_piece = board[selected_pos]
-                        if selected_piece and selected_piece.color == current_turn:
-                            valid_moves = selected_piece.available_moves(board)
-                        else:
-                            selected_piece = None
-                            valid_moves = []
-        
-        screen.fill(pygame.Color("white"))
-        draw_board(screen, board)
-        draw_pieces(screen, board)
-
-        if selected_piece:
-            highlight_selected_piece(screen, selected_pos)
-            display_valid_moves(screen, valid_moves)
-
-        font = pygame.font.SysFont(None, 36)
-        turn_text = font.render(f"{current_turn.capitalize()}'s Turn", True, (WHITE))
-        screen.blit(turn_text, (830, 50))
-
-        #Timer update and display
-        #time_passed = (clock.tick(60) / 1000.0) * 1.95 #Time passed in seconds
-        #if not game_over and current_turn:
-            #current_timer += time_passed
-            #TODO: Add in slider for time
-            #if current_timer >= 60:
-                #if current_turn == "white":
-                    #current_turn = "black"
-                #else:
-                    #current_turn = "white"
-                #current_timer = 0
-        #minutes, seconds = divmod(int(current_timer), 60)
-        #timer_text = font.render(f"Timer: {minutes:02}:{seconds:02}", True, (WHITE))
-        #screen.blit(timer_text, (830, 150))
-
-        if game_status:
-            status_text = font.render(game_status, True, (255, 0, 0))
-            screen.blit(status_text, (830, 100))
-
-        if game_over:
-            game_over_font = pygame.font.SysFont(None, 150)
-            game_over_text = game_over_font.render("Game Over!", True, (255, 0, 0))
-            screen.blit(game_over_text, (100, 350))
-
-            play_again_font = pygame.font.SysFont(None, 36)
-            play_again_text = play_again_font.render("Play again?", True, (WHITE))
-            quit_text = play_again_font.render("Quit", True, (WHITE))
-            screen.blit(play_again_text, (830, 650))
-            screen.blit(quit_text, (830,700))
-
-            menu_screen_font = pygame.font.SysFont(None, 36)
-            menu_screen_text = menu_screen_font.render("Menu", True, (255,255,255))
-            screen.blit(menu_screen_text,(830,750))
-
-        if current_turn == 'black' and not game_over:
-            black_pieces = [piece for row in board.board for piece in row if piece and piece.color == 'black'] #all the black peices going through a loop
-            random_piece = random.choice(black_pieces)
-            potential_moves = random_piece.available_moves(board)
-            if potential_moves:
-                random_move = random.choice(potential_moves)
-                board.move_piece(random_piece, random_move)
-                current_turn = 'white'
-                pygame.mixer.music.load("Sounds/move-self.mp3")
-                pygame.mixer_music.play(0)
-
-        pygame.display.flip()
-
-
-def chess_main():
+def chess_main(single_player=False):
     board = ChessBoard()
     clock = pygame.time.Clock()
     selected_piece = None
     selected_pos = None
     valid_moves = []
+    castle_moves = []  # Initialized here to ensure it is available at start
     current_turn = 'white'
     game_status = ""
+    bot_active = single_player
     game_over = False
 
-    #Timer setup for both players
-    initial_timer = 0 #300 seconds = 5 minuites
+    # Timer setup for both players
+    initial_timer = 0  # 300 seconds = 5 minutes
     timers = {'white': initial_timer, 'black': initial_timer}
 
-    #Initialize current_timer for the starting turn
+    # Initialize current_timer for the starting turn
     current_timer = timers[current_turn]
 
     play_again_rect = pygame.Rect(830, 650, 200, 50)
     quit_rect = pygame.Rect(830, 700, 100, 50)
     menu_rect = pygame.Rect(830, 750, 200, 50)
-    #Main game loop
+    # Main game loop
 
     while True:
         for event in pygame.event.get():
@@ -597,7 +507,7 @@ def chess_main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if game_over:
                     if play_again_rect.collidepoint(event.pos):
-                        chess_main()
+                        chess_main(single_player=single_player)  # Restart with same game mode
                         continue
                     elif quit_rect.collidepoint(event.pos):
                         pygame.quit()
@@ -606,45 +516,79 @@ def chess_main():
                         StartScreen.show_main()
                         continue
 
-                if not game_over:
-                    mouse_pos = event.pos
-                    if mouse_pos[0] < 800:
-                        col = mouse_pos[0] // SQUARE_SIZE
-                        row = mouse_pos[1] // SQUARE_SIZE
-                        if selected_piece and (row, col) in valid_moves:
-                            board.move_piece(selected_piece, (row, col))
-                            #After moving the piece and changing turns update the timer for the next player
-                            pygame.mixer.music.load("Sounds/move-self.mp3")
-                            pygame.mixer_music.play(0)
-                            current_timer = timers[current_turn]
+                if not game_over and event.pos[0] < 800:  # Ensure click is within board area
+                    col = event.pos[0] // SQUARE_SIZE
+                    row = event.pos[1] // SQUARE_SIZE
+                    if selected_piece and (row, col) in valid_moves:
+                        board.move_piece(selected_piece, (row, col))
+                        pygame.mixer.music.load("Sounds/move-self.mp3")
+                        pygame.mixer_music.play(0)
 
-                            board.promote_pawn(selected_piece, (row, col)) # Invoking the pawn promotion function
-
-                            # Check if the king is missing after the move
-                            if not board.is_king_present('white') or not board.is_king_present('black'):
-                                game_status = "Game Over!"
-                                game_over = True
-                            else:
-                                opponent_color = 'black' if current_turn == 'white' else 'white'
-                                if board.is_in_check(opponent_color):
-                                    if board.is_checkmate(opponent_color):
-                                        game_status = "Checkmate"
-                                        game_over = True
-                                    else:
-                                        game_status = "Check"
+                        # Handle castling if the selected piece is a King and the move is a castling move
+                        if selected_piece.__class__.__name__ == "King" and (row, col) in castle_moves:
+                            # Execute castling: move the corresponding rook
+                            if col == 2:  # Long castle
+                                rook = board[(row, 0)]
+                                board.move_piece(rook, (row, 3))
+                            elif col == 6:  # Short castle
+                                rook = board[(row, 7)]
+                                board.move_piece(rook, (row, 5))
+                        
+                        # Reset selections after any move
+                        selected_piece = None
+                        valid_moves = []
+                        castle_moves = []  # Reset after move
+                        
+                        # Check if the king is missing after the move
+                        if not board.is_king_present('white') or not board.is_king_present('black'):
+                            game_status = "Game Over!"
+                            game_over = True
+                        else:
+                            opponent_color = 'black' if current_turn == 'white' else 'white'
+                            if board.is_in_check(opponent_color):
+                                if board.is_checkmate(opponent_color):
+                                    game_status = "Checkmate"
+                                    game_over = True
                                 else:
-                                    game_status = ""
-                                current_turn = opponent_color
-                            selected_piece = None
-                            valid_moves = []
+                                    game_status = "Check"
+                            else:
+                                game_status = ""
+                            
+                            # Ensure turn changes only here after a move is made
+                            current_turn = opponent_color
+                            current_timer = timers[current_turn]  # Reset the timer for the new turn
+                    else:
+                        # New selection or deselection
                         selected_pos = (row, col)
                         selected_piece = board[selected_pos]
                         if selected_piece and selected_piece.color == current_turn:
                             valid_moves = selected_piece.available_moves(board)
+                            if isinstance(selected_piece, King):
+                                castle_moves = if_castle(selected_piece, board)  # Get castling moves
+                                valid_moves.extend(castle_moves)  # Add castling moves to valid moves
                         else:
                             selected_piece = None
                             valid_moves = []
+                            castle_moves = []  # Clear previous castling moves if any
 
+            if bot_active and current_turn == 'black':
+                bot_move(board)  # Call bot_move function to make a move
+                current_turn = 'white'  # After the bot's move, switch to white's turn
+
+            # Check if white is in check after the bot's move
+                if board.is_in_check('white'):
+                    if board.is_checkmate('white'):  # Check if white is in checkmate
+                        game_status = "Checkmate"
+                        game_over = True
+                    else:
+                        game_status = "Check"  # White is in check but not checkmate
+                else:
+                    game_status = ""  # No check on white after bot's move
+
+        board.last_move_start = None
+        board.last_move_end = None
+
+        # Draw the game board and pieces, update timer and game status
         screen.fill(pygame.Color("white"))
         draw_board(screen, board)
         draw_pieces(screen, board)
@@ -653,20 +597,20 @@ def chess_main():
             highlight_selected_piece(screen, selected_pos)
             display_valid_moves(screen, valid_moves)
 
+        if board.is_king_present('white') and board.is_king_present('black'):
+            game_over = False
+        else:
+            game_over = True
         font = pygame.font.SysFont(None, 36)
         turn_text = font.render(f"{current_turn.capitalize()}'s Turn", True, (WHITE))
         screen.blit(turn_text, (830, 50))
 
-        #Timer update and display
-        time_passed = (clock.tick(60) / 1000.0) * 1.95 #Time passed in seconds
+        # Timer update and display
+        time_passed = (clock.tick(60) / 1000.0) * 1.95  # Time passed in seconds
         if not game_over and current_turn:
             current_timer += time_passed
-            #TODO: Add in slider for time
             if current_timer >= 60:
-                if current_turn == "white":
-                    current_turn = "black"
-                else:
-                    current_turn = "white"
+                current_turn = 'black' if current_turn == 'white' else 'white'
                 current_timer = 0
         minutes, seconds = divmod(int(current_timer), 60)
         timer_text = font.render(f"Timer: {minutes:02}:{seconds:02}", True, (WHITE))
