@@ -493,13 +493,16 @@ def bot_move(board):
             return True
     return False  # No valid moves were available
 
-
 # Pygame setup for the graphical interface
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.flip() #updates to display everything
 pygame.display.set_caption('Chess Game')
 
+# Andrew: chess_main
+
 def chess_main(single_player=False):
+
+    # Initliaized variables required for game start 
     board = ChessBoard()
     clock = pygame.time.Clock()
     selected_piece = None
@@ -517,11 +520,12 @@ def chess_main(single_player=False):
     #Initialize current_timer for the starting turn
     current_timer = timers[current_turn]
 
+    # Interface buttons: play again, quit, or menu
     play_again_rect = pygame.Rect(830, 650, 200, 50)
     quit_rect = pygame.Rect(830, 700, 100, 50)
     menu_rect = pygame.Rect(830, 750, 200, 50)
+    
     #Main game loop
-
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -539,6 +543,7 @@ def chess_main(single_player=False):
                         StartScreen.show_main()
                         continue
 
+                # Basic logic handling for chess
                 if not game_over:
                     mouse_pos = event.pos
                     if mouse_pos[0] < 800:
@@ -629,7 +634,10 @@ def chess_main(single_player=False):
         time_passed = (clock.tick(60) / 1000.0) * 1.95 #Time passed in seconds
         if not game_over and current_turn:
             current_timer += time_passed
+            
             #TODO: Add in slider for time
+            
+            # Changing turns if the current player runs out of time
             if current_timer >= 60:
                 if current_turn == "white":
                     current_turn = "black"
