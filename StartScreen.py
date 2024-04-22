@@ -1,3 +1,4 @@
+# These imports allow for the font, access to the main function, and graphical/gameplay interface.
 import Chess
 import pygame
 import sys
@@ -29,6 +30,7 @@ buttons = ['Chess', '1 player', '2 players', 'Rules']  # Added 'Rules' button
 pygame.mixer.music.load('Sounds/Calming Jazz to Play Chess.mp3')
 pygame.mixer.music.play(-1)
 
+# This fucntion creates the button imaged on the start screen, the buttons will be used later.
 def draw_buttons():
     button_list = []  # Empty list to store buttons
     for i, text in enumerate(buttons):
@@ -48,6 +50,7 @@ def draw_buttons():
         button_list.append((button_rect, text))
     return button_list
 
+# This show message, uses the font from the top of the file, to create and render a small line of code at the top of the start screen.
 def show_message(message):
     msg_surf = message_font.render(message, True, black, grey)
     msg_rect = msg_surf.get_rect(center=((width - 200) // 2, 300))
@@ -55,7 +58,7 @@ def show_message(message):
     pygame.display.flip()
     pygame.time.wait(5000)
 
-
+# This function is the same only moved down 30 pixels as that is how vertically wide the characters are.
 def show_message2(message):
     msg_surf = message_font.render(message, True, black, grey)
     msg_rect = msg_surf.get_rect(center=((width - 200) // 2, 330))
@@ -63,7 +66,7 @@ def show_message2(message):
     pygame.display.flip()
     pygame.time.wait(5000)
 
-
+# Same here another 30 pixels down.
 def show_message3(message):
     msg_surf = message_font.render(message, True, black, grey)
     msg_rect = msg_surf.get_rect(center=((width - 200) // 2, 360))
@@ -71,7 +74,7 @@ def show_message3(message):
     pygame.display.flip()
     pygame.time.wait(5000)
 
-
+# Last one, another 30 down, this allows us to have four messages on the screen at once using the same style/sizing but preventing overlap.
 def show_message4(message):
     msg_surf = message_font.render(message, True, black, grey)
     msg_rect = msg_surf.get_rect(center=((width - 200) // 2, 390))
@@ -79,7 +82,11 @@ def show_message4(message):
     pygame.display.flip()
     pygame.time.wait(5000)
 
+""" This is the main function that creates the screen and the black rectangle on the right side that has the timer on it.
+It calls the functions defined above allows the user to click on the buttons, the buttons call the main chess file and tell it if the user 
+is playing single or 2-player """
 
+"""
 def show_main():
     # Game loop
     running = True
