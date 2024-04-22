@@ -78,9 +78,9 @@ def show_main():
                         if text == 'Chess':
                             pass # Call your chess main function
                         elif text == '1 player':
-                            Chess.chess_main(single_player=True)
+                            Chess.one_player_chess_main()
                         elif text == '2 players':
-                            Chess.chess_main(single_player=False)  # Or a different function for 2 players
+                            Chess.chess_main()  # Or a different function for 2 players
 
     # Quit Pygame
     pygame.quit()

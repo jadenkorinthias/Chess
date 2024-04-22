@@ -50,10 +50,6 @@ class ChessBoard:
     def __getitem__(self, pos):
         x, y = pos
         return self.board[x][y]
-    
-    def __setitem__(self, position, value):
-        x, y = position
-        self.board[x][y] = value
 
     def initialize_pieces(self):
         # Initialize black pieces
@@ -396,7 +392,7 @@ def display_valid_moves(screen, moves):
         pygame.draw.circle(circle_surface, circle_color, circle_position, 15)
         screen.blit(circle_surface, (col * SQUARE_SIZE, row * SQUARE_SIZE))
 
-"""def if_castle(king, board): #WIP Kyle
+def if_castle(king, board): #WIP Kyle
     # Ensure the piece is a King and it has not moved
     if isinstance(king, King) and not king.has_moved:
         # Determine the row for castling based on the king's color
@@ -419,7 +415,7 @@ def display_valid_moves(screen, moves):
                  # Check if there is a clear path and the king is not in check
                 if clear_path and not board.is_in_check(king.color):
                     return True # Return True if castling is possible
-    return False # Return False if castling is not possible"""
+    return False # Return False if castling is not possible
 
 def draw_castle_moves(screen, moves): #WIP Kyle
     pass
@@ -432,7 +428,7 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.flip() #updates to display everything
 pygame.display.set_caption('Chess Game')
 
-"""def one_player_chess_main():
+def one_player_chess_main():
     board = ChessBoard()
     #clock = pygame.time.Clock()
     selected_piece = None
@@ -569,80 +565,18 @@ pygame.display.set_caption('Chess Game')
                 pygame.mixer_music.play(0)
 
         pygame.display.flip()
-"""
 
-def bot_move(board):
-    game_over = False
-    all_moves = []
-    for row in range(8):
-        for col in range(8):
-            piece = board[(row, col)]
-            if piece and piece.color == 'black':  # Ensure we're only moving black pieces
-                moves = piece.available_moves(board)
-                for move in moves:
-                    score = 0
-                    target_x, target_y = move
-                    # Temporarily make the move to evaluate it
-                    captured_piece = board[(target_x, target_y)]  # Capture the piece if there is one
-                    original_piece = board[(row, col)]
-                    board[(row, col)] = None
-                    board[(target_x, target_y)] = piece
-                    original_position = piece.position
-                    piece.position = (target_x, target_y)
-                    # Check for check condition after move
-                    if not board.is_in_check('black'):
-                        # Capture opponent's piece
-                        if captured_piece:
-                            score += 10 * (5 if isinstance(captured_piece, Queen) else 1)  # Higher value for capturing more valuable pieces
-                        # Control the center of the board
-                        if 2 <= target_x <= 5 and 2 <= target_y <= 5:
-                            score += 1  # Central squares are more valuable
-                        # Penalize the move if it exposes the piece to capture
-                        for opp_row in range(8):
-                            for opp_col in range(8):
-                                opp_piece = board[(opp_row, opp_col)]
-                                if opp_piece and opp_piece.color != 'black' and (target_x, target_y) in opp_piece.available_moves(board):
-                                    score -= 10  # Penalize moves that lead to potential capture
-                    else:
-                        score -= 50  # Highly penalize moves that leave or put king in check
 
-                    # Undo the move
-                    board[(row, col)] = original_piece
-                    board[(target_x, target_y)] = captured_piece
-                    piece.position = original_position
-                    # Add the move and its score to the list if it's a legal move
-                    all_moves.append((piece, move, score))
-    print(all_moves)
-    # Select the move with the highest score
-    if all_moves:
-        piece, best_move, _ = max(all_moves, key=lambda x: x[2])
-        # Make the actual move
-        board.move_piece(piece, best_move)
-        opponent_color = 'white'  # Assuming black is the bot
-        # Check if the move resulted in a check or a checkmate
-        in_check = board.is_in_check(opponent_color)
-        king_present = board.is_king_present(opponent_color)
-
-        # Print statements to debug or to log the game state
-        if not king_present:
-            print("King captured!")
-            return game_over == True
-        elif in_check:
-            print("Check!")        
-        return True
-    return False  # No valid moves were available
-
-def chess_main(single_player=False):
+def chess_main():
     board = ChessBoard()
     clock = pygame.time.Clock()
     selected_piece = None
     selected_pos = None
     valid_moves = []
-    castle_moves = []  # Initialized here to ensure it is available at start
     current_turn = 'white'
     game_status = ""
-    bot_active = single_player
     game_over = False
+
     #Timer setup for both players
     initial_timer = 0 #300 seconds = 5 minuites
     timers = {'white': initial_timer, 'black': initial_timer}
@@ -687,23 +621,6 @@ def chess_main(single_player=False):
                             board.promote_pawn(selected_piece, (row, col)) # Invoking the pawn promotion function
 
                             # Check if the king is missing after the move
-
-                            # Handle castling if the selected piece is a King and the move is a castling move
-                            if isinstance(selected_piece,King) and (row, col) in castle_moves:
-                                # Execute castling: move the corresponding rook
-                                if col == 2:  # Long castle
-                                    rook = board[(row, 0)]
-                                    board.move_piece(rook, (row, 3))
-                                elif col == 6:  # Short castle
-                                    rook = board[(row, 7)]
-                                    board.move_piece(rook, (row, 5))
-
-                            # Reset selections after any move
-                            selected_piece = None
-                            valid_moves = []
-                            castle_moves = []  # Reset after move
-
-                            # Check if the king is missing after the move
                             if not board.is_king_present('white') or not board.is_king_present('black'):
                                 game_status = "Game Over!"
                                 game_over = True
@@ -717,36 +634,16 @@ def chess_main(single_player=False):
                                         game_status = "Check"
                                 else:
                                     game_status = ""
-                                
-                                # Ensure turn changes only here after a move is made
                                 current_turn = opponent_color
-                                current_timer = timers[current_turn]  # Reset the timer for the new turn
+                            selected_piece = None
+                            valid_moves = []
+                        selected_pos = (row, col)
+                        selected_piece = board[selected_pos]
+                        if selected_piece and selected_piece.color == current_turn:
+                            valid_moves = selected_piece.available_moves(board)
                         else:
-                            # New selection or deselection
-                            selected_pos = (row, col)
-                            selected_piece = board[selected_pos]
-                            if selected_piece and selected_piece.color == current_turn:
-                                valid_moves = selected_piece.available_moves(board)
-                                if isinstance(selected_piece, King):
-                                    castle_moves = if_castle(selected_piece, board)  # Get castling moves
-                                    valid_moves.extend(castle_moves)  # Add castling moves to valid moves
-                            else:
-                                selected_piece = None
-                                valid_moves = []
-                                castle_moves = []  # Clear previous castling moves if any
-
-        if bot_active and current_turn == 'black':
-                pygame.display.flip()  # Bot's turn logic outside the event loop
-                if bot_move(board):
-                    current_turn = 'white'
-                if board.is_in_check('white'):
-                    if board.is_checkmate('white'):
-                        game_status = "Checkmate"
-                        game_over = True
-                    else:
-                        game_status = "Check"
-                else:
-                    game_status = ""
+                            selected_piece = None
+                            valid_moves = []
 
         screen.fill(pygame.Color("white"))
         draw_board(screen, board)
