@@ -444,7 +444,7 @@ def get_piece_value(piece): #values from wikipedia - they are the widely conside
         return 200
 
 """
-Jaden: his code defines a function that determines the best move for a black player in the chess game based on mathematical evaluations. 
+Jaden: This defines a function that determines the best move for a black player in the chess game based on mathematical evaluations. 
 It iterates over all black pieces on the board, generates all possible moves for each piece, evaluates each move based on capturing pieces and central square placement, and selects the move with the highest score. 
 If a move is found, it executes it on the board and checks if it resulted in check, checkmate, or king capture. 
 If no valid moves are available, it returns False.
