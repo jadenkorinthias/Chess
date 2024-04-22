@@ -95,9 +95,10 @@ class ChessBoard:
         if isinstance(piece, Pawn):
             piece.first_move = False  
 
+    # Pawn Promotion method
     def promote_pawn(self, piece, new_position):
         new_x, new_y = new_position
-        # If pawn has reached the promotion condition
+        # Check if the pawn has reached the promotion condition
         if isinstance(piece, Pawn):
             if (piece.color == 'white' and new_x == 0) or (piece.color == 'black' and new_x == 7):
                 self.board[new_x][new_y] = Queen(piece.color, new_position)
@@ -498,23 +499,30 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.flip() #updates to display everything
 pygame.display.set_caption('Chess Game')
 
-# Andrew: chess_main
+# Andrew: chess_main function
+# The chess_main function orchestrates the main gameplay loop for a chess game.
+# It supports single-player (against a bot) and two-player modes, which are determined by the `single_player` flag.
+# The function initializes the game board, clock, and other essential game elements such as pieces, their positions, and valid moves.
+# Players alternate turns, starting with white. Each turn allows the player to select and move pieces according to chess rules.
+# The function also supports the timer for each player, with the game transitioning turns automatically if a player's timer runs out of time.
+# If the game ends, the game displays the status and prompts the user with options to play again, exit to the menu, or quit, using mouse clicks.
+# The function continuously updates the display and checks for game-ending conditions, updating the status and handling the user's game decisions.
 
 def chess_main(single_player=False):
 
-    # Initliaized variables required for game start 
+    # Initliaized variables required for the game start state
     board = ChessBoard()
     clock = pygame.time.Clock()
     selected_piece = None
     selected_pos = None
     valid_moves = []
-    castle_moves = []  # Initialized here to ensure it is available at start
+    castle_moves = []  # Initialized here to ensure it is available at the start
     current_turn = 'white'
     game_status = ""
     bot_active = single_player
     game_over = False
-    #Timer setup for both players
-    initial_timer = 0 #300 seconds = 5 minuites
+    #Timer setup
+    initial_timer = 0 
     timers = {'white': initial_timer, 'black': initial_timer}
 
     #Initialize current_timer for the starting turn
@@ -543,7 +551,7 @@ def chess_main(single_player=False):
                         StartScreen.show_main()
                         continue
 
-                # Basic logic handling for chess
+                # Basic logic handling for chess game
                 if not game_over:
                     mouse_pos = event.pos
                     if mouse_pos[0] < 800:
