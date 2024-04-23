@@ -11,7 +11,6 @@ def parse_eval(eval_str):
     mate_match = re.search(r'\#-?(\d+)', eval_str)
     if mate_match:
         mate_in = int(mate_match.group(1))
-        # Assign high positive or negative value based on mate direction
         return 10000 / mate_in if eval_str.startswith('#-') else -10000 / mate_in
 
     eval_match = re.search(r'\[%eval ([-+]?[\d\.]+)\]', eval_str)
@@ -21,28 +20,50 @@ def parse_eval(eval_str):
     return None
 
 def parse_pgn(stream, csv_writer):
-    """ Parse the PGN file and write FEN and evaluation to a CSV. """
+    """ Parse the PGN file and write comprehensive game data to a CSV. """
     pgn = chess.pgn.read_game(stream)
     while pgn is not None:
         board = pgn.board()
+        move_sequence = []
+        game_info = {
+            'WhiteElo': pgn.headers.get('WhiteElo', ''),
+            'BlackElo': pgn.headers.get('BlackElo', ''),
+            'Result': pgn.headers.get('Result', ''),
+            'ECO': pgn.headers.get('ECO', ''),
+            'Opening': pgn.headers.get('Opening', ''),
+            'TimeControl': pgn.headers.get('TimeControl', ''),
+            'Termination': pgn.headers.get('Termination', '')
+        }
         for move in pgn.mainline():
+            move_sequence.append(move.move.uci())
             board.push(move.move)
             eval_str = move.comment
             eval = parse_eval(eval_str)
             if eval is not None:
                 fen = board.fen()
-                csv_writer.writerow([fen, eval])
+                row = [
+                    ' '.join(move_sequence),
+                    fen,
+                    eval,
+                    game_info['WhiteElo'],
+                    game_info['BlackElo'],
+                    game_info['Result'],
+                    game_info['ECO'],
+                    game_info['Opening'],
+                    game_info['TimeControl'],
+                    game_info['Termination']
+                ]
+                csv_writer.writerow(row)
         pgn = chess.pgn.read_game(stream)
-
 
 def process_file(file_path):
     """ Process a single PGN file. """
-    # Ensure the path to zstdcat is correct as per your system's installation location
     zstd_path = 'C:\\ProgramData\\chocolatey\\lib\\zstandard\\tools\\zstd-v1.5.6-win64\\zstd.exe'
     with subprocess.Popen([zstd_path, '-d', file_path, '--stdout'], stdout=subprocess.PIPE, text=True) as proc:
         with open(f'{file_path}.csv', 'w', newline='') as file:
             csv_writer = csv.writer(file)
-            csv_writer.writerow(['FEN', 'Evaluation'])
+            headers = ['Move Sequence', 'FEN', 'Evaluation', 'WhiteElo', 'BlackElo', 'Result', 'ECO', 'Opening', 'TimeControl', 'Termination']
+            csv_writer.writerow(headers)
             parse_pgn(proc.stdout, csv_writer)
 
 def main():

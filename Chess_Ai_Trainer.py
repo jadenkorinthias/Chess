@@ -80,7 +80,7 @@ def train_model(model=None):
     # Load game records from a CSV file
     game_records = load_game_records('lichess_db_standard_rated_2013-01.pgn.zst.csv')  # Ensure the file name is correct
     dataset = ChessDataset(game_records)
-    loader = DataLoader(dataset, batch_size=32, shuffle=True)
+    loader = DataLoader(dataset, batch_size=32, shuffle=True, num_workers=11)
     
     # Initialize the model
     if model is None:
@@ -93,8 +93,9 @@ def train_model(model=None):
 
     # Initialize the Trainer with accelerator for GPU support if available, learning rate monitor, model checkpointing, and TensorBoard logging
     trainer = pl.Trainer(
-        max_epochs=10, 
-        accelerator="ddp" if torch.cuda.is_available() else None, 
+        max_epochs=18000,
+        accelerator="auto",
+        devices=1,         
         callbacks=[
             LearningRateMonitor(logging_interval='step'), 
             ModelCheckpoint(dirpath='./model/', every_n_epochs=1)
