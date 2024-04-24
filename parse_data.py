@@ -19,41 +19,52 @@ def parse_eval(eval_str):
 
     return None
 
+def safe_int_conversion(elo_str):
+    """ Safely convert ELO string to an integer, handling cases where conversion is not possible. """
+    try:
+        return int(elo_str)
+    except ValueError:
+        return 0  # Return 0 or some other default value if the ELO string is not a valid integer.
+
 def parse_pgn(stream, csv_writer):
-    """ Parse the PGN file and write comprehensive game data to a CSV. """
+    """ Parse the PGN file and write comprehensive game data to a CSV only if both players' ELOs are above 1500. """
     pgn = chess.pgn.read_game(stream)
     while pgn is not None:
-        board = pgn.board()
-        move_sequence = []
-        game_info = {
-            'WhiteElo': pgn.headers.get('WhiteElo', ''),
-            'BlackElo': pgn.headers.get('BlackElo', ''),
-            'Result': pgn.headers.get('Result', ''),
-            'ECO': pgn.headers.get('ECO', ''),
-            'Opening': pgn.headers.get('Opening', ''),
-            'TimeControl': pgn.headers.get('TimeControl', ''),
-            'Termination': pgn.headers.get('Termination', '')
-        }
-        for move in pgn.mainline():
-            move_sequence.append(move.move.uci())
-            board.push(move.move)
-            eval_str = move.comment
-            eval = parse_eval(eval_str)
-            if eval is not None:
-                fen = board.fen()
-                row = [
-                    ' '.join(move_sequence),
-                    fen,
-                    eval,
-                    game_info['WhiteElo'],
-                    game_info['BlackElo'],
-                    game_info['Result'],
-                    game_info['ECO'],
-                    game_info['Opening'],
-                    game_info['TimeControl'],
-                    game_info['Termination']
-                ]
-                csv_writer.writerow(row)
+        white_elo = safe_int_conversion(pgn.headers.get('WhiteElo', '0'))
+        black_elo = safe_int_conversion(pgn.headers.get('BlackElo', '0'))
+        
+        if white_elo > 1500 and black_elo > 1500:
+            board = pgn.board()
+            move_sequence = []
+            game_info = {
+                'WhiteElo': white_elo,
+                'BlackElo': black_elo,
+                'Result': pgn.headers.get('Result', ''),
+                'ECO': pgn.headers.get('ECO', ''),
+                'Opening': pgn.headers.get('Opening', ''),
+                'TimeControl': pgn.headers.get('TimeControl', ''),
+                'Termination': pgn.headers.get('Termination', '')
+            }
+            for move in pgn.mainline():
+                move_sequence.append(move.move.uci())
+                board.push(move.move)
+                eval_str = move.comment
+                eval = parse_eval(eval_str)
+                if eval is not None:
+                    fen = board.fen()
+                    row = [
+                        ' '.join(move_sequence),
+                        fen,
+                        eval,
+                        game_info['WhiteElo'],
+                        game_info['BlackElo'],
+                        game_info['Result'],
+                        game_info['ECO'],
+                        game_info['Opening'],
+                        game_info['TimeControl'],
+                        game_info['Termination']
+                    ]
+                    csv_writer.writerow(row)
         pgn = chess.pgn.read_game(stream)
 
 def process_file(file_path):
