@@ -1,3 +1,8 @@
+"""
+This is our start screen file, this is what the project must be run through. It creates the starting screen imagery + sound and calls the main functions when asked.
+Putting this code on a seperate file, kept things clean and elimated errors.
+"""
+
 # These imports allow for the font, access to the main function, and graphical/gameplay interface.
 import Chess
 import pygame
