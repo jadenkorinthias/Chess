@@ -40,7 +40,7 @@ Have fun!
   
 **Why and how our plan changed:
 - To put it simply, we were not satisfied with the barebones game and once it was completed we wanted to have more and knew it would make the game even more enjoyable.
-- Additionally, 
+- Additionally, we wanted to challenge ourselves because we wanted to see just how far we could go with this project.
 
 **Description of difficulties we encountered**
 - We ran into a few little bugs, one for example was in creating the chess bot. For starters, we made a randomized bot that took account of all possible moves and just made one.
@@ -72,6 +72,11 @@ last move indicator, and pawn promotion. I managed to integrate these components
 issues I encountered, however, with brainstorming effective team communication, and the collective help of my other teammates, these problems did not persist for long, and as a result helped evolve the state of our game. 
 It is also important to note that I gained a new perspective in the development of our game, understanding and developing methods to solve and/or work around bugs which, in turn, helped me become a better coder. 
 With this, like the rest of my team, I am very satisfied with our final product and believe that our collective efforts and dedication were instrumental in achieving our goals.
+
+Kyle - I had the primary tasks of the board and chess pieces classes. I had to add in alot more than I thought that I would need over the span of us making the project, I was able to confere with my peers and when I fell short
+they had the answer or found another way to look at the situation. While working on some of the main loop called functions with andrew I was able to work well with him as well as work with jaden to improve the UI that we put out. 
+My main hardships for this project was the movement of the pieces and how the capture mechanics would move. Still not perfect by any means but I was happy with what I was able to do in such a short time. Overall I know
+that I would not have been able to do this without my team helping me along they way, they are the real MVP's. I would give us all A's.
 
 Finally, each member of the team should submit a short paragraph assessing yourself and your teammates.
 I will give you time to do this on the last day of class, in addition to course evaluations. You should indicate
